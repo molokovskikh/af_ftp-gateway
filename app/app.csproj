@@ -37,7 +37,7 @@
       <HintPath>packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ionic.Zip, Version=1.9.8.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+    <Reference Include="Ionic.Zip">
       <HintPath>..\packages\DotNetZip.1.9.8\lib\net20\Ionic.Zip.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -53,7 +53,7 @@
       <HintPath>packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NHibernate.Mapping.Attributes, Version=4.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NHibernate.Mapping.Attributes">
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

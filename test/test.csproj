@@ -31,12 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.ActiveRecord, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Ionic.Zip, Version=1.9.8.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+    <Reference Include="Castle.ActiveRecord" />
+    <Reference Include="Ionic.Zip">
       <HintPath>..\packages\DotNetZip.1.9.8\lib\net20\Ionic.Zip.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="NHibernate" />
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.2.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
