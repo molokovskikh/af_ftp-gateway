@@ -127,23 +127,25 @@ namespace app
 
 		public static void MainLoop(Config.Config config, CancellationToken token)
 		{
-			try {
-				IList<uint> userIds;
-				using (var session = Factory.OpenSession()) {
-					userIds = session.CreateSQLQuery("select Id from Customers.Users where UseFtpGateway = 1")
-						.List<uint>();
-				}
-				foreach (var userId in userIds) {
-					log.Debug($"Обработка пользователя {userId}");
+			while (!token.IsCancellationRequested) {
+				try {
+					IList<uint> userIds;
+					using (var session = Factory.OpenSession()) {
+						userIds = session.CreateSQLQuery("select Id from Customers.Users where UseFtpGateway = 1")
+							.List<uint>();
+					}
+					foreach (var userId in userIds) {
+						log.Debug($"Обработка пользователя {userId}");
+						token.ThrowIfCancellationRequested();
+						ProcessUser(config, userId);
+					}
+					token.WaitHandle.WaitOne(config.LookupTime);
 					token.ThrowIfCancellationRequested();
-					ProcessUser(config, userId);
+				} catch(Exception e) {
+					if (e is OperationCanceledException)
+						return;
+					log.Error("Ошибка при обработке", e);
 				}
-				token.WaitHandle.WaitOne(config.LookupTime);
-				token.ThrowIfCancellationRequested();
-			} catch(Exception e) {
-				if (e is OperationCanceledException)
-					return;
-				log.Error("Ошибка при обработке", e);
 			}
 		}
 
