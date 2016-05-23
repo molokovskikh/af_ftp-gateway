@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using app;
+using app.Config;
 using Common.Tools;
 using Common.Tools.Helpers;
 using Ionic.Zip;
@@ -17,13 +18,13 @@ namespace test
 	[TestFixture]
 	public class DataFixture : IntegrationFixture2
 	{
-		private Program.Config config;
+		private Config config;
 
 		[SetUp]
 		public void Setup()
 		{
 			FileHelper.InitDir("tmp");
-			config = new Program.Config();
+			config = new Config();
 			config.RootDir = Directory.CreateDirectory("tmp").FullName;
 		}
 

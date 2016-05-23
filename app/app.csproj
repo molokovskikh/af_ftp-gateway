@@ -57,6 +57,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
@@ -67,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Config.cs" />
     <Compile Include="Config\Initializers\NHibernate.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentLine.cs" />
@@ -79,6 +81,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="App.release.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

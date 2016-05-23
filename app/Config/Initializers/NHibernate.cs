@@ -35,16 +35,7 @@ namespace app.Config.Initializers
 				m.ManyToOne(i => i.ProductEntity, x => x.Column("ProductId"));
 				m.Property(i => i.ProducerCostWithoutNDS, x => x.Column("ProducerCost"));
 			});
-			//var excludes = new[] { typeof(NamedOffer) };
-			//var types = typeof(Invoice).Assembly.GetTypes().Where(t => t.GetProperty("Id") != null).Except(excludes);
-			//Mapper.AddMappings(types);
-			//var mapping = Mapper.CompileMappingForAllExplicitlyAddedEntities();
 			base.Init();
-
-			//SessionFactoryHolder = new SessionFactoryHolder("local");
-			//SessionFactoryHolder.Configuration.SetNamingStrategy(new PluralizeNamingStrategy());
-			//SessionFactoryHolder.Configuration.AddDeserializedMapping(mapping, "Info.Drugstore.Service.Models");
-			//SessionFactoryHolder.Configuration.AddInputStream(HbmSerializer.Default.Serialize(Assembly.Load("Common.Models")));
 		}
 	}
 }

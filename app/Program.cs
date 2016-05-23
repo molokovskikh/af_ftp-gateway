@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -87,11 +88,6 @@ namespace app
 
 	public class Program
 	{
-		public class Config
-		{
-			public string RootDir;
-		}
-
 		public static ISessionFactory Factory;
 		public static uint SupplierIdForCodeLookup;
 
@@ -102,15 +98,21 @@ namespace app
 			CancellationTokenSource stop = null;
 			try
 			{
-				var config = new Config();
 				AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => {
 					log.Fatal("Необработанная ошибка", eventArgs.ExceptionObject as Exception);
 				};
 				TaskScheduler.UnobservedTaskException += (sender, eventArgs) => {
 					log.Fatal("Необработанная ошибка", eventArgs.Exception);
 				};
+
+				var config = new Config.Config(ConfigurationManager.AppSettings);
 				XmlConfigurator.Configure();
 				stop = new CancellationTokenSource();
+				SupplierIdForCodeLookup = config.SupplierId;
+
+				var nHibernate = new Config.Initializers.NHibernate();
+				nHibernate.Init();
+				Factory = nHibernate.Factory;
 
 				return CommandService.Start(args, stop, MainLoop(config, stop.Token));
 			}
@@ -123,17 +125,31 @@ namespace app
 			}
 		}
 
-		public static async Task MainLoop(Config config, CancellationToken token)
+		public static async Task MainLoop(Config.Config config, CancellationToken token)
 		{
-			var userIds = new List<uint>();
-			foreach (var userId in userIds) {
-				ProcessUser(config, userId);
+			try {
+				IList<uint> userIds;
+				using (var session = Factory.OpenSession()) {
+					userIds = session.CreateSQLQuery("select Id from Customers.Users where UseFtpGateway = 1")
+						.List<uint>();
+				}
+				foreach (var userId in userIds) {
+					token.ThrowIfCancellationRequested();
+					ProcessUser(config, userId);
+				}
+				token.WaitHandle.WaitOne(config.LookupTime);
+				token.ThrowIfCancellationRequested();
+			} catch(Exception e) {
+				if (e is OperationCanceledException)
+					return;
+				log.Error("Ошибка при обработке", e);
 			}
 		}
 
-		public static void ProcessUser(Config config, uint userId)
+		public static void ProcessUser(Config.Config config, uint userId)
 		{
-			var pricesDir = Directory.CreateDirectory(Path.Combine(config.RootDir, "prices"));
+			var userRoot = Path.Combine(config.RootDir, userId.ToString());
+			var pricesDir = Directory.CreateDirectory(Path.Combine(userRoot, "prices"));
 			var marker = pricesDir.EnumerateFiles("request.txt").FirstOrDefault();
 			if (marker != null) {
 				using (var session = Factory.OpenSession())
@@ -144,10 +160,10 @@ namespace app
 				marker.Delete();
 			}
 
-			var ordersDir = Directory.CreateDirectory(Path.Combine(config.RootDir, "orders"));
+			var ordersDir = Directory.CreateDirectory(Path.Combine(userRoot, "orders"));
 			ImportOrders(ordersDir, userId);
 
-			var waybillsDir = Directory.CreateDirectory(Path.Combine(config.RootDir, "waybills"));
+			var waybillsDir = Directory.CreateDirectory(Path.Combine(userRoot, "waybills"));
 			using (var session = Factory.OpenSession())
 			using (var trx = session.BeginTransaction()) {
 				ExportWaybills(waybillsDir, session, userId);
