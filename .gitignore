@@ -4,3 +4,4 @@ packages
 AssemblyInfo.cs
 .vs
 *.user
+*.DotSettings

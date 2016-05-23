@@ -1,0 +1,13 @@
+﻿@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table>
+	<tbody>
+	@foreach(var item in Model) {
+		<tr>
+			<td>@item.FullName</td>
+		</tr>
+	}
+	</tbody>
+</table>
