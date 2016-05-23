@@ -114,7 +114,7 @@ namespace app
 				nHibernate.Init();
 				Factory = nHibernate.Factory;
 
-				return CommandService.Start(args, stop, MainLoop(config, stop.Token));
+				return CommandService.Start(args, stop, new Task(() => MainLoop(config, stop.Token)));
 			}
 			catch (Exception e) {
 				log.Fatal("Не удалось запустить приложение", e);
@@ -125,7 +125,7 @@ namespace app
 			}
 		}
 
-		public static async Task MainLoop(Config.Config config, CancellationToken token)
+		public static void MainLoop(Config.Config config, CancellationToken token)
 		{
 			try {
 				IList<uint> userIds;

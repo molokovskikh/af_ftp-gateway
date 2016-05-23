@@ -1,3 +1,16 @@
-Global(
-	Profile: "catalog"
+﻿Global(
+	HumanReadableName: "Служба Интеграции с ИнфоАптека",
+	Server: "offdcnew.adc.analit.net",
+	DeployTo: """\\offdcnew.adc.analit.net\apps\ftp-gateway\bin\"""
 )
+
+
+task @default, [@build]
+
+task @build:
+	Build(Globals, "app")
+
+task "deploy:app", [@build]:
+	DeployService(Globals, "	app", Globals.Server, Globals.DeployTo)
+
+task @deploy, ["deploy:pipeline"]
