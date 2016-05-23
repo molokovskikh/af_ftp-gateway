@@ -134,6 +134,7 @@ namespace app
 						.List<uint>();
 				}
 				foreach (var userId in userIds) {
+					log.Debug($"Обработка пользователя {userId}");
 					token.ThrowIfCancellationRequested();
 					ProcessUser(config, userId);
 				}
