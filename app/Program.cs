@@ -500,6 +500,8 @@ group by ai.AddressId")
 			writer.WriteStartElement("ITEM");
 
 			writer.Element("CODE", String.Concat(offer.Code, offer.CodeCr));
+			writer.Element("ACODE", offer.ProductId);
+			writer.Element("ACODECR", offer.CodeFirmCr);
 			writer.Element("NAME", offer.ProductSynonym);
 			writer.Element("VENDOR", offer.ProducerSynonym);
 			writer.Element("VENDORBARCODE", offer.EAN13.Slice(12));
