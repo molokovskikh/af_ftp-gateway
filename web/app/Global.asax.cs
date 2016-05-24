@@ -5,71 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using log4net;
-using NHibernate;
-using LogManager = WebGrease.LogManager;
 
 namespace web_app
 {
-	public class SessionFilter : ActionFilterAttribute
-	{
-		private ILog log = log4net.LogManager.GetLogger(typeof(SessionFilter));
-		private ISessionFactory factory;
-
-		public SessionFilter(ISessionFactory factory)
-		{
-			this.factory = factory;
-		}
-
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			var controller = context.Controller;
-			if (controller == null || controller.GetType().GetProperty("Session") == null)
-				return;
-
-			var session = factory.OpenSession();
-			try {
-				session.BeginTransaction();
-				((dynamic)context.Controller).Session = session;
-			}
-			catch {
-				session.Close();
-				throw;
-			}
-		}
-
-		public override void OnActionExecuted(ActionExecutedContext context)
-		{
-			var controller = context.Controller;
-			if (controller == null || controller.GetType().GetProperty("Session") == null)
-				return;
-			var session = (ISession)((dynamic)controller).Session;
-			if (session == null)
-				return;
-
-			try {
-				if (session.Transaction.IsActive) {
-					var fail = context.Exception != null;
-					if (fail) {
-						//если мы откатывается то в случае ошибки не нужно затирать оригинальную ошибку
-						try {
-							session.Transaction.Rollback();
-						}
-						catch(Exception e) {
-							log.Error("Ошибка при откате транзакции", e);
-						}
-					}
-					else {
-						session.Flush();
-						session.Transaction.Commit();
-					}
-				}
-			}
-			finally {
-				session.Close();
-			}
-		}
-	}
 	public class MvcApplication : System.Web.HttpApplication
 	{
 		protected void Application_Start()

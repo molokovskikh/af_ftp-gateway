@@ -9,11 +9,11 @@ namespace web_app.Controllers
 	[Authorize]
 	public class ClientController : Controller
 	{
-		ISession DbSession;
+		public ISession DbSession => (ISession)HttpContext.Items[typeof(ISession)];
 
 		public ActionResult Index()
 		{
-			var items = DbSession.Query<Client>().Take(10).OrderBy(x => x.Name).ToList();
+			var items = DbSession.Query<Client>().OrderBy(x => x.Name).Take(10).ToList();
 			return View(items);
 		}
 	}
