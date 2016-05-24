@@ -105,8 +105,10 @@ namespace app
 					log.Fatal("Необработанная ошибка", eventArgs.Exception);
 				};
 
-				var config = new Config.Config(ConfigurationManager.AppSettings);
 				XmlConfigurator.Configure();
+				GlobalContext.Properties["Version"] = typeof(Program).Assembly.GetName().Version;
+
+				var config = new Config.Config(ConfigurationManager.AppSettings);
 				stop = new CancellationTokenSource();
 				SupplierIdForCodeLookup = config.SupplierId;
 
