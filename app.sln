@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app", "app\app.csproj", "{2061E90B-0783-43E4-A545-1C333867D125}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app", "backend\app\app.csproj", "{2061E90B-0783-43E4-A545-1C333867D125}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{2F93DB0E-A2BB-4071-BE1A-9D3750B3393C}"
 EndProject
@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Models.Tests", "lib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.MySql", "lib\common-mysql\Common.MySql\Common.MySql.csproj", "{8A680813-C83B-497A-85E6-E8F07B7D7650}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{30C8668C-C31D-4D34-8954-1AA488FA97D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "backend\test\test.csproj", "{30C8668C-C31D-4D34-8954-1AA488FA97D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.NHibernate", "lib\common-mysql\Common.NHibernate\Common.NHibernate.csproj", "{8BE188CA-A0D9-4609-AB2E-AB8EDF849FE0}"
 EndProject
