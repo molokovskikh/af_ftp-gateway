@@ -253,10 +253,10 @@ limit 400;")
 			foreach (var file in files) {
 				try {
 					var ext = Path.GetExtension(file);
-					if (ext.Match(".xml")) {
+					if (ext.Match(".xml") || ext.Match(".ord")) {
 						ImportOrder(userId, file);
 						File.Delete(file);
-					} else if (ext.Match(".zip") || ext.Match(".ord")) {
+					} else if (ext.Match(".zip")) {
 						using (var zip = ZipFile.Read(file)) {
 							foreach (var zipItem in zip) {
 								if (Path.GetExtension(zipItem.FileName).Match(".xml")) {
