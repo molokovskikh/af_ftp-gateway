@@ -37,11 +37,11 @@ namespace test
 			var client = TestClient.CreateNaked(session);
 			FlushAndCommit();
 
-			Directory.CreateDirectory("tmp/prices");
-			FileHelper.Touch("tmp/prices/request.txt");
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
+			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
 			Program.ProcessUser(config, client.Users[0].Id);
-			Assert.That(Directory.GetFiles("tmp\\prices").Implode(), Does.Contain($"{price.Id}_1.xml"));
-			Assert.IsFalse(File.Exists("tmp/prices/request.txt"));
+			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.xml"));
+			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}
 
 		[Test]
