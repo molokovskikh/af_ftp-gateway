@@ -1,7 +1,8 @@
 ﻿Global(
 	HumanReadableName: "Служба Интеграции с ИнфоАптека",
 	Server: "offdcnew.adc.analit.net",
-	DeployTo: """\\offdcnew.adc.analit.net\apps\ftp-gateway\bin\"""
+	DeployTo: """\\offdcnew.adc.analit.net\apps\ftp-gateway\bin\""",
+	Profile: "catalog"
 )
 
 
