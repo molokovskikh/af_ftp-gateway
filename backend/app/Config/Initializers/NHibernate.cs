@@ -35,6 +35,7 @@ namespace app.Config.Initializers
 				m.ManyToOne(i => i.ProductEntity, x => x.Column("ProductId"));
 				m.Property(i => i.ProducerCostWithoutNDS, x => x.Column("ProducerCost"));
 			});
+			Include.Add(typeof(ArchiveOffer));
 			base.Init();
 		}
 	}

@@ -72,10 +72,10 @@ namespace test
 			session.Save(intersection);
 			FlushAndCommit();
 
-			Directory.CreateDirectory("tmp/orders");
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
 			using (var zip = new ZipFile()) {
 				zip.AddEntry("1.xml", OrderPacket(price.Core.Select(x => (object)x.Id).Take(2).ToArray()));
-				zip.Save("tmp/orders/order.zip");
+				zip.Save(Path.Combine(root.FullName, "order.zip"));
 			}
 
 			QueryCatcher.Warn();
