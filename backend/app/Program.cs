@@ -15,6 +15,7 @@ using Common.Models.Repositories;
 using Common.MySql;
 using Common.NHibernate;
 using Common.Tools;
+using Common.Tools.Helpers;
 using Common.Tools.Threading;
 using Ionic.Zip;
 using log4net;
@@ -137,9 +138,15 @@ namespace app
 							.List<uint>();
 					}
 					foreach (var userId in userIds) {
-						log.Debug($"Обработка пользователя {userId}");
-						token.ThrowIfCancellationRequested();
-						ProcessUser(config, userId);
+						try {
+							log.Debug($"Обработка пользователя {userId}");
+							token.ThrowIfCancellationRequested();
+							ProcessUser(config, userId);
+						} catch(Exception e) {
+							if (e is OperationCanceledException)
+								return;
+							log.Error($"Ошибка при обработке пользователя {userId}", e);
+						}
 					}
 					token.WaitHandle.WaitOne(config.LookupTime);
 					token.ThrowIfCancellationRequested();
@@ -452,6 +459,9 @@ group by ai.AddressId")
 					writer.WriteStartDocument(true);
 					action(writer);
 				}
+				File.Delete(file);
+				WaitHelper.WaitOrFail(TimeSpan.FromSeconds(30), () => !File.Exists(file),
+					"$Не удалось дождаться удаления файла {file}");
 				File.Move(tmp, file);
 			} finally {
 				File.Delete(tmp);
