@@ -6,3 +6,6 @@ AssemblyInfo.cs
 *.user
 *.DotSettings
 output
+msbuild.gen.props
+log4net.txt
+errors.log

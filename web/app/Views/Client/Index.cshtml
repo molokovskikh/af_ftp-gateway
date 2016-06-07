@@ -1,13 +1,49 @@
-﻿@{
-	Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿@using web_app.Interfaces
+@model web_app.Helper.Paginator<web_app.Models.Client>
 
-<table>
-	<tbody>
-	@foreach(var item in Model) {
+@{
+	ViewBag.Title = "Клиенты";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	IWebOperator webOperator = ViewBag.WebOperator;
+	string search = ViewBag.SearchPhrase;
+}
+@using (Html.BeginForm("Index", "Client", null, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+				<div class="input-group ">
+					@Html.TextBoxFor(m => search, new { @class = "form-control", placeholder = "Поиск клиентов..." })
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-success">Найти</button>
+					</span>
+				</div><!-- /input-group -->
+}
+<div class="panel">
+	@Html.Partial("Pagination", Model)
+	<table class="table table-bordered">
+		<thead>
 		<tr>
-			<td>@item.FullName</td>
+			<th>Наименование клиентов</th>
+			<th>Полное наименование</th>
 		</tr>
-	}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+		@foreach (var item in Model.List) {
+			<tr>
+				<td>
+					<a href="@Url.Action("Info", new { id = item.Id })">
+						@if (item.FtpIntegration) {
+							<strong>@item.Name</strong>
+						}
+						else {
+							@item.Name
+						}
+					</a>
+				</td>
+				<td>
+					<a href="@Url.Action("Info", new { id = item.Id })">@item.FullName</a>
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+	@Html.Partial("Pagination", Model)
+</div>
