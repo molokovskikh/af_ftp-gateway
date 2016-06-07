@@ -68,19 +68,15 @@ namespace web_app.Controllers
 #else
 	//todo: это необходимо пересмотреть, т.к. у себя механизмавторизации проверить не получилось
 	//запрос на добавление пользователя к другому приложению
-				string ulrAuthenticate = ConfigurationManager.AppSettings["UpdateAuthenticate"];
-			//аутентификация
 			string ulrNewUser = ConfigurationManager.AppSettings["UpdateClientFtpState"];
 			var wc = new WebClient();
-			wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-			wc.UploadString(ulrAuthenticate,"");
 
 			//отправка запроса на добавление пользователя
 			//получение строки с логином и паролем в случае удачной авторизации
 			string parametres = $"id={item.Id}";
 			wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
 			string htmlResultRaw = wc.DownloadString(ulrNewUser+"?"+ parametres);
-			var htmlResult = htmlResultRaw.Split(',');
+			htmlResult = htmlResultRaw.Split(',');
 
 #endif
 			//если логин и пароль есть, отображаем их в сообщении
