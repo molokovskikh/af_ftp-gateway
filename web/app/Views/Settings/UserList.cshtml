@@ -1,0 +1,38 @@
+﻿@using web_app.Interfaces
+@model List<web_app.Models.Outsider>
+@{
+  ViewBag.Title = "Управление пользователями";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+  IWebOperator webOperator = ViewBag.WebOperator;
+}
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<strong>Пользователи</strong>
+	</div>
+	<div class="panel-body">
+		<div class="panel">
+			<a href="@Url.Action("UserProfile")" class="btn btn-success">Добавить</a>
+		</div>
+		<table class="table table-bordered">
+			<thead>
+			<tr>
+				<th>Логин</th>
+				<th>Наименование</th>
+				<th>Активен</th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var item in Model) {
+				<tr>
+					<td><a href="@Url.Action("UserProfile", new { id = item.Id })">@item.Login</a></td>
+					<td>@item.Name</td>
+					<td>
+						@(item.Enabled ? "да" : "нет")
+					</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+	</div>
+</div>

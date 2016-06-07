@@ -42,7 +42,7 @@ namespace web_app
 						try {
 							session.Transaction.Rollback();
 						}
-						catch(Exception e) {
+						catch (Exception e) {
 							log.Error("Ошибка при откате транзакции", e);
 						}
 					}

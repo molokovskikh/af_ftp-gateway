@@ -3,14 +3,16 @@ using web_app.Interfaces;
 
 namespace web_app.Models
 {
-	//Админ
-	public class Admin : IWebOperator
+	/// <summary>
+	///сторонний пользователь
+	/// </summary>
+	public class Outsider : IWebOperator
 	{
 		public virtual uint Id { get; set; }
 
 		public virtual string Login { get; set; }
 
-		public virtual bool IsAdmin => true;
+		public virtual bool IsAdmin => false;
 
 		public virtual string Name { get; set; }
 
@@ -18,5 +20,7 @@ namespace web_app.Models
 		{
 			return this;
 		}
+		public virtual bool Enabled { get; set; }
+
 	}
 }

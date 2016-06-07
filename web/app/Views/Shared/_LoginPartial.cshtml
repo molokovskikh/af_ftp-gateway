@@ -6,9 +6,9 @@
 
 		<ul class="nav navbar-nav navbar-right">
 			<li>
-				<span class="navbar-text">Пользователь @HttpContext.Current.User.Identity.Name</span>
+				<span class="navbar-text">Пользователь <strong>@HttpContext.Current.User.Identity.Name</strong></span>
 			</li>
-			<li><a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a></li>
+			<li><a href="javascript:document.getElementById('logoutForm').submit()" id="logoutLink">Выйти</a></li>
 		</ul>
 	}
 }

@@ -1,0 +1,49 @@
+﻿
+@model web_app.Helper.Paginator<web_app.Models.Client>
+@{
+	string search = ViewBag.SearchPhrase??"";
+}
+
+<nav>
+	<ul class="pagination">
+		@if (Model.PageCurrent > Model.PageFirst)
+		{
+			<li>
+				<a href="@Url.Action("Index", "Client", new { currentPage = Model.PageCurrent-1, search })" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+			}
+
+
+		@for (int i = 4; i >= 1; i--) {
+			var current = Model.PageCurrent - i;
+			if (current >= Model.PageFirst) {
+				<li>
+					<a href="@Url.Action("Index", "Client", new { currentPage = current,search})">@(current)</a>
+				</li>
+			}
+		}
+		<li class="active">
+			<a href="@Url.Action("Index", "Client", new { currentPage = Model.PageCurrent, search })">@(Model.PageCurrent)</a>
+		</li>
+
+		@for (int i = 1; i <= 7; i++) {
+			var current = Model.PageCurrent + i;
+			if (current > Model.PagesTotal) {
+				break;
+			}
+			<li>
+				<a href="@Url.Action("Index", "Client", new { currentPage = current, search })">@(current)</a>
+			</li>
+		}
+@if (Model.PageCurrent < Model.PagesTotal) {
+	<li>
+		<a href="@Url.Action("Index", "Client", new { currentPage = Model.PageCurrent+1, search })" aria-label="Next">
+			<span aria-hidden="true">&raquo;</span>
+		</a>
+	</li>
+}
+
+	</ul>
+</nav>

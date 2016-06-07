@@ -1,0 +1,35 @@
+﻿@using web_app.Interfaces
+@model List<web_app.Models.User>
+@{
+  ViewBag.Title = "Редактор";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+  IWebOperator webOperator = ViewBag.WebOperator;
+}
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<strong>Пользователи</strong>
+	</div>
+	<div class="panel-body">
+		<table class="table table-bordered">
+			<thead>
+			<tr>
+				<th>Логин</th>
+				<th>Наименование</th>
+				<th>Активен</th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var item in Model) {
+				<tr>
+					<td>@item.Login</td>
+					<td>@item.Name</td>
+					<td>
+						@(item.Enabled?"да":"нет")
+					</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+	</div>
+</div>
