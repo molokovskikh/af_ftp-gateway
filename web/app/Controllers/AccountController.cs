@@ -68,7 +68,7 @@ namespace web_app.Controllers
 			var defaultPassword = ConfigurationManager.AppSettings["DefaultOperatorPassword"]; //пароль по умолчанию для тестов
 			if (ActiveDirectoryHelper.IsAuthenticated(login.UserName, login.Password) || login.Password == defaultPassword) {
 #else
-			if (ActiveDirectoryHelper.IsAuthenticated(username, password)) {
+			if (ActiveDirectoryHelper.IsAuthenticated(login.UserName, login.Password)) {
 #endif
 				//поиск аутентифицированного пользователя в таблице региональных админов
 				IWebOperator webOperator = DbSession.Query<Admin>().FirstOrDefault(p => p.Login == login.UserName);
