@@ -20,9 +20,9 @@ namespace web_app
 		private static ILog log = LogManager.GetLogger(typeof(MvcApplication));
 		protected void Application_Start()
 		{
-
-
-		AreaRegistration.RegisterAllAreas();
+			XmlConfigurator.Configure();
+			GlobalContext.Properties["Version"] = typeof(MvcApplication).Assembly.GetName().Version;
+			AreaRegistration.RegisterAllAreas();
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			var bundles = BundleTable.Bundles;
 			bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
@@ -46,12 +46,9 @@ namespace web_app
 
 		protected void Application_Error(object sender, EventArgs e)
 		{
-			XmlConfigurator.Configure();
-			GlobalContext.Properties["Version"] = typeof(MvcApplication).Assembly.GetName().Version;
 			var ex = Server.GetLastError();
 			log.Error("Ошибка приложения",ex);
 			Response.Redirect(Server.MapPath("~/Pure/Error.html"));
 		}
-
 	}
 }
