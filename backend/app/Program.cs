@@ -132,6 +132,7 @@ namespace app
 		{
 			while (!token.IsCancellationRequested) {
 				try {
+					var logger = new MemorableLogger(log);
 					IList<uint> userIds;
 					using (var session = Factory.OpenSession()) {
 						userIds = session.CreateSQLQuery("select Id from Customers.Users where UseFtpGateway = 1")
@@ -142,10 +143,11 @@ namespace app
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
 							ProcessUser(config, userId);
+							logger.Forget(userId);
 						} catch(Exception e) {
 							if (e is OperationCanceledException)
 								return;
-							log.Error($"Ошибка при обработке пользователя {userId}", e);
+							logger.Error($"Ошибка при обработке пользователя {userId}", e, userId);
 						}
 					}
 					token.WaitHandle.WaitOne(config.LookupTime);
