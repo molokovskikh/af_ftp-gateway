@@ -8,4 +8,4 @@ AssemblyInfo.cs
 output
 msbuild.gen.props
 log4net.txt
-errors.log
+app.log

@@ -66,18 +66,17 @@ namespace web_app.Controllers
 #if DEBUG
 			htmlResult = new[] { "newLogin", "newPass" };
 #else
-	//todo: это необходимо пересмотреть, т.к. у себя механизмавторизации проверить не получилось
-	//запрос на добавление пользователя к другому приложению
+			
+	//запрос на добавление пользователя к другому приложению 
 			string ulrNewUser = ConfigurationManager.AppSettings["UpdateClientFtpState"];
-			var wc = new WebClient();
-
 			//отправка запроса на добавление пользователя
 			//получение строки с логином и паролем в случае удачной авторизации
 			string parametres = $"id={item.Id}";
-			wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-			string htmlResultRaw = wc.DownloadString(ulrNewUser+"?"+ parametres);
-			htmlResult = htmlResultRaw.Split(',');
 
+
+			var serviceConnection = new AdminServiceConnection("analit");
+			var tt = serviceConnection.ExecuteAction<dynamic>(ulrNewUser, parametres);
+			htmlResult = tt.Result.ToString().Split(',');
 #endif
 			//если логин и пароль есть, отображаем их в сообщении
 			if (!string.IsNullOrEmpty(htmlResult[0]) && !string.IsNullOrEmpty(htmlResult[1])) {

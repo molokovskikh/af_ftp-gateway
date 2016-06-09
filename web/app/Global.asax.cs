@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -10,7 +11,7 @@ namespace web_app
 {
 	public class MvcApplication : System.Web.HttpApplication
 	{
-		private static ILog log = LogManager.GetLogger(typeof(MvcApplication));
+		private static ILog _log = LogManager.GetLogger(typeof(MvcApplication));
 
 		protected void Application_Start()
 		{
@@ -41,8 +42,9 @@ namespace web_app
 		protected void Application_Error(object sender, EventArgs e)
 		{
 			var ex = Server.GetLastError();
-			log.Error("Ошибка приложения",ex);
-			Response.Redirect(Server.MapPath("~/Pure/Error.html"));
+			_log.Error("Ошибка приложения", ex);
+			HttpContext.Current.ClearError();
+			HttpContext.Current.Response.Redirect("~/Pure/Error.html");
 		}
 	}
 }
