@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<PACKET NAME="Прайс-лист" FROM="Медлайн" TYPE="10">
+  <PRICELIST DATE="26.05.2016 09:27" NAME="Медлайн Хартманн">
+    <ITEM>
+      <CODE>530373</CODE>
+      <ACODE>37998</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Омнипласт арт.900571, пластырь фиксир. гипоаллерг. 2,5 смх 9,2м катушка 1 пач.картон. 5</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>10</QTTY>
+      <VALID_DATE>01.06.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>42665012</XCODE>
+      <PRICES>
+        <Базовая>611,6</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>520709</CODE>
+      <ACODE>3856</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Idealflex Universal арт.931322, бинт Универсальный компрес. эластич. 5 мх8 см пак.ПЭ 1</NAME>
+      <VENDOR>paul hartmann, германия~paul hartmann, индия</VENDOR>
+      <QTTY>15</QTTY>
+      <VALID_DATE>01.03.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>56494654</XCODE>
+      <PRICES>
+        <Базовая>72,6</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>515041</CODE>
+      <ACODE>21845</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Омнипласт арт.900531, пластырь фиксир. телесн.цв 2,5х500 см катушка 1 бан.пластик. 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>9</QTTY>
+      <VALID_DATE>01.05.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>93145482</XCODE>
+      <PRICES>
+        <Базовая>109,97</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>542948</CODE>
+      <ACODE>160281</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Космопор Advance арт.901010, повязка раневая самофикс. 7,2 x 5 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>25</QTTY>
+      <VALID_DATE>01.07.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>107318020</XCODE>
+      <PRICES>
+        <Базовая>13,94</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>554563</CODE>
+      <ACODE>39743</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Космопор Е арт.901019 Steril, повязка раневая самофикс. 15х6 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>20</QTTY>
+      <VALID_DATE>01.10.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>107803822</XCODE>
+      <PRICES>
+        <Базовая>15,09</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>754205</CODE>
+      <ACODE>203805</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Molinea Normal арт.161530, пеленка впит. одноразов. 60х90 см б/уп. 1 пак.ПЭ 30</NAME>
+      <VENDOR>Пауль Хартманн АГ, Россия</VENDOR>
+      <QTTY>3</QTTY>
+      <VALID_DATE>01.03.2021</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>128882780</XCODE>
+      <PRICES>
+        <Базовая>553,13</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>542948</CODE>
+      <ACODE>160281</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Космопор Advance арт.901010, повязка раневая самофикс. 7,2 x 5 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>5</QTTY>
+      <VALID_DATE>01.07.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>135109782</XCODE>
+      <PRICES>
+        <Базовая>12,67</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>520990</CODE>
+      <ACODE>40067</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Омнисилк арт.900502, пластырь фиксир. гипоаллерг. 5х500 см катушка 1 бан.пластик. 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>15</QTTY>
+      <VALID_DATE>01.09.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>135109788</XCODE>
+      <PRICES>
+        <Базовая>191,34</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>518863</CODE>
+      <ACODE>38036</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Омнификс арт.900605, пластырь фиксир. гипоаллерг. 10мх20см катушка 1 пач.картон. 1</NAME>
+      <VENDOR>Paul Hartmann, Германия~Paul Hartmann, Испания</VENDOR>
+      <QTTY>13</QTTY>
+      <VALID_DATE>01.11.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>135109790</XCODE>
+      <PRICES>
+        <Базовая>866,54</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>526579</CODE>
+      <ACODE>51912</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Космопор I.V. арт.900805, повязка д/фикс. катетера самоклеющ. 6х8см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>250</QTTY>
+      <VALID_DATE>01.09.2020</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>139505814</XCODE>
+      <PRICES>
+        <Базовая>10,91</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>528534</CODE>
+      <ACODE>244967</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Атрауман арт.499536, повязка мазев. ранозажив. 10х20 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>20</QTTY>
+      <VALID_DATE>01.09.2019</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>151263912</XCODE>
+      <PRICES>
+        <Базовая>37,1</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>500331</CODE>
+      <ACODE>22213</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Бранолинд Н арт.492346, повязка мазев. Перуанский бальзам 10х20 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>105</QTTY>
+      <VALID_DATE>01.02.2019</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153147314</XCODE>
+      <PRICES>
+        <Базовая>77,6</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>737724</CODE>
+      <ACODE>109884</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Гидрофилм плюс арт. 685779, повязка самофикс. пленочная прозрачн. с впитыв. подушечкой 10х25 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>50</QTTY>
+      <VALID_DATE>01.12.2019</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153147316</XCODE>
+      <PRICES>
+        <Базовая>69,37</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>541944</CODE>
+      <ACODE>160327</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Космопор Advance арт.901013, повязка раневая самофикс. 10x8 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>165</QTTY>
+      <VALID_DATE>01.01.2021</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153147318</XCODE>
+      <PRICES>
+        <Базовая>26,17</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>739382</CODE>
+      <ACODE>196381</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Меналинд Профешнл арт.995035, крем защитн. с цинком туба 200 мл</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>3</QTTY>
+      <VALID_DATE>01.06.2017</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153147320</XCODE>
+      <PRICES>
+        <Базовая>280,75</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>502432</CODE>
+      <ACODE>21849</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Омнипор арт.900550, пластырь фиксир. гипоаллерг. 1,25х500 см катушка 1 бан.пластик. 1</NAME>
+      <VENDOR>Paul Hartmann, Испания</VENDOR>
+      <QTTY>15</QTTY>
+      <VALID_DATE>01.02.2021</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153147322</XCODE>
+      <PRICES>
+        <Базовая>50,58</Базовая>
+      </PRICES>
+    </ITEM>
+    <ITEM>
+      <CODE>500330</CODE>
+      <ACODE>39741</ACODE>
+      <ACODECR>1837</ACODECR>
+      <NAME>Бранолинд Н арт.492343, повязка мазев. Перуанский бальзам 7,5х10 см пак.бум.ламин.ПЭ 1</NAME>
+      <VENDOR>Paul Hartmann, Германия</VENDOR>
+      <QTTY>62</QTTY>
+      <VALID_DATE>01.08.2018</VALID_DATE>
+      <ISBAD>0</ISBAD>
+      <XCODE>153294690</XCODE>
+      <PRICES>
+        <Базовая>43,03</Базовая>
+      </PRICES>
+    </ITEM>
+  </PRICELIST>
+</PACKET>

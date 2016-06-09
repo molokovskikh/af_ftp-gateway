@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<PACKET TYPE="11" NAME="Заявка поставщику" ID="6000" PRED_ID="262" FROM="001" TO="ТЕСТОВЫЙ ПОСТАВЩИК" DB_VER="451" DLL_VER="3.446.1.196">
+  <ORDER>
+    <ORDER_ID>6000</ORDER_ID>
+    <DEP_ID>9001</DEP_ID>
+    <CLIENT_ID>262001</CLIENT_ID>
+    <ORDERDATE>10.09.2012 15:39:57</ORDERDATE>
+    <PLDATE>10.09.2012 3:21:00</PLDATE>
+    <PL_NAME>Тестовый поставщик</PL_NAME>
+    <PAYTYPE>Базовая</PAYTYPE>
+    <ITEMS>
+      <ITEM>
+        <CODE>130406</CODE>
+        <NAME>АУРОБИН МАЗЬ 20Г</NAME>
+        <VENDOR>GEDEON RICHTER</VENDOR>
+        <QTTY>1</QTTY>
+        <PRICE>100</PRICE>
+      </ITEM>
+      <ITEM>
+        <CODE>127962</CODE>
+        <NAME>БЕТАДИН СУПП. ВАГ. 200МГ №14</NAME>
+        <VENDOR>EGIS</VENDOR>
+        <QTTY>10</QTTY>
+        <PRICE>100</PRICE>
+      </ITEM>
+    </ITEMS>
+  </ORDER>
+</PACKET>

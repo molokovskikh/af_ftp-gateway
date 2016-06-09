@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using log4net;
 using log4net.Config;
 using web_app.Config;
-using web_app.Services;
 
 namespace web_app
 {
 	public class MvcApplication : System.Web.HttpApplication
 	{
 		private static ILog log = LogManager.GetLogger(typeof(MvcApplication));
+
 		protected void Application_Start()
 		{
 			XmlConfigurator.Configure();

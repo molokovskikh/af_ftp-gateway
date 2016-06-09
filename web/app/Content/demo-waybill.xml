@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<PACKET NAME="Электронная накладная" ID="238538-03" FROM="Поставщик для Тестирования" TYPE="12">
+  <SUPPLY>
+    <INVOICE_NUM>238538-03</INVOICE_NUM>
+    <INVOICE_DATE>21.04.2016</INVOICE_DATE>
+    <ITEMS>
+      <ITEM>
+        <CODE>61552817</CODE>
+        <NAME>SILKOPLAST ПЛАСТЫРЬ UNIVERSAL N20/ЗАЩИТА СЕРЕБРА</NAME>
+        <VENDOR>Фармапласт С.А.Е</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>77,900000</SPRICE>
+        <VPRICE>77,900000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>7,790000</SNDSSUM>
+        <SERIA>042020</SERIA>
+        <VALID_DATE>01.04.2020</VALID_DATE>
+        <GTD>10130070/080413/0006355/1</GTD>
+        <SERT_NUM>ФСЗ 2011/10540</SERT_NUM>
+        <VENDORBARCODE>622400054932</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14921205</CODE>
+        <NAME>АМБРОБЕНЕ 0,015/5МЛ 100МЛ СИРОП</NAME>
+        <VENDOR>Меркле ГмбХ</VENDOR>
+        <QTTY>3</QTTY>
+        <SPRICE>87,200000</SPRICE>
+        <VPRICE>85,110000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>26,160000</SNDSSUM>
+        <SERIA>R37871</SERIA>
+        <VALID_DATE>01.10.2020</VALID_DATE>
+        <GTD>10130032/151215/0010389/1</GTD>
+        <SERT_NUM>РОСС DE.ФМ08.Д03494</SERT_NUM>
+        <VENDORBARCODE>403009624512</VENDORBARCODE>
+        <REG_PRICE>88,270000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>37071081</CODE>
+        <NAME>АМОКСИЦИЛЛИН 0,5 N20 ТАБЛ</NAME>
+        <VENDOR>Биохимик,ОАО</VENDOR>
+        <QTTY>5</QTTY>
+        <SPRICE>49,400000</SPRICE>
+        <VPRICE>45,140000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>24,700000</SNDSSUM>
+        <SERIA>1810316</SERIA>
+        <VALID_DATE>01.04.2019</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ09.Д96486</SERT_NUM>
+        <VENDORBARCODE>460250900636</VENDORBARCODE>
+        <REG_PRICE>45,140000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14922124</CODE>
+        <NAME>БЕРОДУАЛ Н 20МКГ+50МКГ 200ДОЗ 10МЛ АЭРОЗОЛЬ Д/ИНГ</NAME>
+        <VENDOR>Берингер Ингельхайм Фарма ГмбХ и Ко.КГ</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>387,500000</SPRICE>
+        <VPRICE>387,810000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>38,750000</SNDSSUM>
+        <SERIA>505624</SERIA>
+        <VALID_DATE>31.07.2018</VALID_DATE>
+        <GTD>10130130/161115/0016672/4</GTD>
+        <SERT_NUM>РОСС DE.ФМ08.Д97132</SERT_NUM>
+        <VENDORBARCODE>900696800321</VENDORBARCODE>
+        <REG_PRICE>389,560000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>61776078</CODE>
+        <NAME>БОРНАЯ К-ТА 3% 25МЛ СПИРТ Р-Р /ГИППОКРАТ</NAME>
+        <VENDOR>Гиппократ,ООО</VENDOR>
+        <QTTY>5</QTTY>
+        <SPRICE>4,700000</SPRICE>
+        <VPRICE>4,700000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>2,350000</SNDSSUM>
+        <SERIA>081115</SERIA>
+        <VALID_DATE>01.12.2018</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ05.Д14411</SERT_NUM>
+        <VENDORBARCODE>460700736099</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>33243726</CODE>
+        <NAME>ВАЛЕРИАНЫ ЭКСТРАКТ 0,02 N50 ТАБЛ П/О</NAME>
+        <VENDOR>ОЗОН,ООО</VENDOR>
+        <QTTY>8</QTTY>
+        <SPRICE>30,200000</SPRICE>
+        <VPRICE>30,200000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>24,160000</SNDSSUM>
+        <SERIA>400515</SERIA>
+        <VALID_DATE>01.06.2018</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ05.Д87991</SERT_NUM>
+        <VENDORBARCODE>460702776162</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>45965523</CODE>
+        <NAME>ДЕФИСЛЕЗ 0,003/МЛ 10МЛ ГЛ КАПЛИ</NAME>
+        <VENDOR>Синтез АКОМПиИ,ОАО ("Синтез" ОАО)</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>30,800000</SPRICE>
+        <VPRICE>32,000000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>6,160000</SNDSSUM>
+        <SERIA>30216</SERIA>
+        <VALID_DATE>01.03.2018</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ05.Д27339</SERT_NUM>
+        <VENDORBARCODE>460256501007</VENDORBARCODE>
+        <REG_PRICE>32,940000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>33225478</CODE>
+        <NAME>КЕТОНАЛ 2,5% 50,0 ГЕЛЬ</NAME>
+        <VENDOR>Салютас Фарма ГмбХ</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>230,400000</SPRICE>
+        <VPRICE>230,400000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>23,040000</SNDSSUM>
+        <SERIA>FD5720</SERIA>
+        <VALID_DATE>01.03.2018</VALID_DATE>
+        <GTD>10130032/120116/0000037/02</GTD>
+        <SERT_NUM>РОСС DE.ФМ08.Д07365</SERT_NUM>
+        <VENDORBARCODE>403085544483</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>39714664</CODE>
+        <NAME>КЕТОПРОФЕН 5% 30,0 ГЕЛЬ</NAME>
+        <VENDOR>Синтез АКОМПиИ,ОАО ("Синтез" ОАО)</VENDOR>
+        <QTTY>3</QTTY>
+        <SPRICE>60,700000</SPRICE>
+        <VPRICE>60,700000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>18,210000</SNDSSUM>
+        <SERIA>50116</SERIA>
+        <VALID_DATE>01.02.2021</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ05.Д21699</SERT_NUM>
+        <VENDORBARCODE>460256501932</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14923887</CODE>
+        <NAME>КОРТЕКСИН 0,01 N10 ФЛАК ЛИОФИЛ Д/Р-РА В/М</NAME>
+        <VENDOR>ГЕРОФАРМ ООО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>937,400000</SPRICE>
+        <VPRICE>970,000000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>93,740000</SNDSSUM>
+        <SERIA>390216</SERIA>
+        <VALID_DATE>23.02.2019</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ03.Д10502</SERT_NUM>
+        <VENDORBARCODE>460700836001</VENDORBARCODE>
+        <REG_PRICE>970,000000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14923636</CODE>
+        <NAME>ЛЕВОМЕКОЛЬ 40,0 МАЗЬ</NAME>
+        <VENDOR>Нижфарм АО</VENDOR>
+        <QTTY>5</QTTY>
+        <SPRICE>75,400000</SPRICE>
+        <VPRICE>75,400000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>37,700000</SNDSSUM>
+        <SERIA>5840715</SERIA>
+        <VALID_DATE>01.02.2019</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ11.Д16373</SERT_NUM>
+        <VENDORBARCODE>460102600684</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>68314437</CODE>
+        <NAME>ЛОРИСТА Н 0,0125+0,05 N90 ТАБЛ П/ПЛЕН/ОБОЛОЧ</NAME>
+        <VENDOR>КРКА-РУС, ООО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>391,300000</SPRICE>
+        <VPRICE>391,300000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>39,130000</SNDSSUM>
+        <SERIA>54640915</SERIA>
+        <VALID_DATE>01.09.2020</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ11.Д30182</SERT_NUM>
+        <VENDORBARCODE>460705513622</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14924779</CODE>
+        <NAME>МОТИЛАК 0,01 N30 ТАБЛ П/О</NAME>
+        <VENDOR>Верофарм,АО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>131,300000</SPRICE>
+        <VPRICE>131,300000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>13,130000</SNDSSUM>
+        <SERIA>40216</SERIA>
+        <VALID_DATE>01.03.2021</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ11.Д44169</SERT_NUM>
+        <VENDORBARCODE>460293000435</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>77781019</CODE>
+        <NAME>НУРОФЕН ЭКСПРЕСС 0,2 N8 КАПС</NAME>
+        <VENDOR>Баннер Фармакапс Европа Б.В/.Рекитт Бенкизер Хелскэр Интернешнл Лтд.</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>110,500000</SPRICE>
+        <VPRICE>101,880000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>22,100000</SNDSSUM>
+        <SERIA>BS775</SERIA>
+        <VALID_DATE>01.07.2017</VALID_DATE>
+        <GTD>10130130/271115/0017374/1</GTD>
+        <SERT_NUM>РОСС GB.ФВ14.Д15639</SERT_NUM>
+        <VENDORBARCODE>500015810611</VENDORBARCODE>
+        <REG_PRICE>101,880000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>17096199</CODE>
+        <NAME>ОМЕЗ 0,02 N30 КАПС</NAME>
+        <VENDOR>Д-р Редди с Лабораторис Лтд</VENDOR>
+        <QTTY>3</QTTY>
+        <SPRICE>135,000000</SPRICE>
+        <VPRICE>132,250000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>40,500000</SNDSSUM>
+        <SERIA>B502997</SERIA>
+        <VALID_DATE>30.09.2018</VALID_DATE>
+        <GTD>10130032/260116/0000417/1</GTD>
+        <SERT_NUM>РОСС IN.ФМ08.Д09150</SERT_NUM>
+        <VENDORBARCODE>890114806001</VENDORBARCODE>
+        <REG_PRICE>132,360000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>76991322</CODE>
+        <NAME>ПАНТОГАМ 0,25 N50 ТАБЛ</NAME>
+        <VENDOR>ПИК-ФАРМА ЛЕК, ООО</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>308,000000</SPRICE>
+        <VPRICE>308,000000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>61,600000</SNDSSUM>
+        <SERIA>J591215D</SERIA>
+        <VALID_DATE>01.01.2020</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФВ14.Д16690</SERT_NUM>
+        <VENDORBARCODE>463001612012</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>45085815</CODE>
+        <NAME>ПРИСЫПКА ДЕТСКАЯ 40,0 ПОР Д/НАРУЖ</NAME>
+        <VENDOR>Синтез АКОМПиИ,ОАО ("Синтез" ОАО)</VENDOR>
+        <QTTY>6</QTTY>
+        <SPRICE>20,200000</SPRICE>
+        <VPRICE>20,200000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>12,120000</SNDSSUM>
+        <SERIA>70216</SERIA>
+        <VALID_DATE>01.03.2021</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ05.Д24314</SERT_NUM>
+        <VENDORBARCODE>460256500051</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>82426088</CODE>
+        <NAME>РЕСЛИП 0,015 N30 ТАБЛ П/ПЛЕН/ОБОЛОЧ</NAME>
+        <VENDOR>Оболенское Фармацевтическое предприятие, ЗАО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>162,500000</SPRICE>
+        <VPRICE>162,500000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>16,250000</SNDSSUM>
+        <SERIA>10116</SERIA>
+        <VALID_DATE>01.02.2018</VALID_DATE>
+        <SERT_NUM>РОСС RU.МП25.Д42455</SERT_NUM>
+        <VENDORBARCODE>460507700968</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>35280182</CODE>
+        <NAME>РИНОНОРМ 0,1% 15МЛ НАЗ СПРЕЙ</NAME>
+        <VENDOR>Меркле ГмбХ</VENDOR>
+        <QTTY>10</QTTY>
+        <SPRICE>46,600000</SPRICE>
+        <VPRICE>46,690000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>46,600000</SNDSSUM>
+        <SERIA>R46007</SERIA>
+        <VALID_DATE>01.12.2018</VALID_DATE>
+        <GTD>10130032/150216/0001113/1</GTD>
+        <SERT_NUM>РОСС DE.ФМ08.Д12819</SERT_NUM>
+        <VENDORBARCODE>403009611148</VENDORBARCODE>
+        <REG_PRICE>46,790000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>35426517</CODE>
+        <NAME>САЛИЦИЛОВАЯ 2% 25,0 МАЗЬ</NAME>
+        <VENDOR>Тульская фармацевтическая фабрика, ООО</VENDOR>
+        <QTTY>3</QTTY>
+        <SPRICE>18,800000</SPRICE>
+        <VPRICE>16,240000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>5,640000</SNDSSUM>
+        <SERIA>10216</SERIA>
+        <VALID_DATE>01.02.2018</VALID_DATE>
+        <SERT_NUM>РОСС RU.ФМ14.Д37723</SERT_NUM>
+        <VENDORBARCODE>460390500217</VENDORBARCODE>
+        <REG_PRICE>16,240000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>24121320</CODE>
+        <NAME>СТРЕПСИЛС С ВИТАМИНОМ С N24 ТАБЛ /АПЕЛЬСИН/</NAME>
+        <VENDOR>Рекитт Бенкизер Хелскэр Интернешнл Лтд</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>129,500000</SPRICE>
+        <VPRICE>129,500000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>25,900000</SNDSSUM>
+        <SERIA>BV445</SERIA>
+        <VALID_DATE>01.12.2018</VALID_DATE>
+        <GTD>10130130/280116/0000885/1</GTD>
+        <SERT_NUM>РОСС GB.ФВ14.Д17606</SERT_NUM>
+        <VENDORBARCODE>500015810373</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>35581499</CODE>
+        <NAME>ТОЛПЕРИЗОН-OBL 0,15 N30 ТАБЛ П/О</NAME>
+        <VENDOR>Оболенское Фармацевтическое предприятие, ЗАО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>170,600000</SPRICE>
+        <VPRICE>170,600000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>17,060000</SNDSSUM>
+        <SERIA>271015</SERIA>
+        <VALID_DATE>01.11.2017</VALID_DATE>
+        <SERT_NUM>РОСС RU.МП25.Д34656</SERT_NUM>
+        <VENDORBARCODE>460507700559</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>84769388</CODE>
+        <NAME>ЭРИСПИРУС 0,08 N20 ТАБЛ ПРОЛОНГ П/ПЛЕН/ОБОЛОЧ</NAME>
+        <VENDOR>Сандоз Илач Санаи Ве Тиджарет А.С.</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>138,100000</SPRICE>
+        <VPRICE>137,460000</VPRICE>
+        <NDS>10</NDS>
+        <SNDSSUM>27,620000</SNDSSUM>
+        <SERIA>GA6848</SERIA>
+        <VALID_DATE>01.01.2018</VALID_DATE>
+        <GTD>10130060/100316/0003431/06</GTD>
+        <SERT_NUM>РОСС TR.ФМ08.Д17724</SERT_NUM>
+        <VENDORBARCODE>869951603917</VENDORBARCODE>
+        <REG_PRICE>166,000000</REG_PRICE>
+        <ISGV>1</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>53427784</CODE>
+        <NAME>NATURA MEDICA ГЕЛЬ-БАЛЬЗАМ ЖИВОКОСТ/САБЕЛЬНИК 85МЛ</NAME>
+        <VENDOR>ТВИНС Тэк ЗАО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>63,660000</SPRICE>
+        <VPRICE>63,660000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>11,460000</SNDSSUM>
+        <SERIA>7572</SERIA>
+        <VALID_DATE>01.02.2018</VALID_DATE>
+        <SERT_NUM>RU Д-RU.PA01.В.09799</SERT_NUM>
+        <VENDORBARCODE>460701024552</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>24121427</CODE>
+        <NAME>STOPPROBLEM ЛОСЬОН САЛИЦИЛОВЫЙ Д/ЖИРНОЙ КОЖИ 100МЛ</NAME>
+        <VENDOR>СМ МИШЕЛЬ, ООО</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>36,360000</SPRICE>
+        <VPRICE>36,360000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>13,090000</SNDSSUM>
+        <SERIA>606</SERIA>
+        <VALID_DATE>01.10.2017</VALID_DATE>
+        <SERT_NUM>ТС RU Д-RU.ПК08.В.03194</SERT_NUM>
+        <VENDORBARCODE>460714682205</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>59249014</CODE>
+        <NAME>ГЛИЦИН ФОРТЕ N20 ТАБЛ</NAME>
+        <VENDOR>Алина Фарма ООО</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>32,290000</SPRICE>
+        <VPRICE>32,290000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>11,620000</SNDSSUM>
+        <SERIA>1060416</SERIA>
+        <VALID_DATE>05.04.2018</VALID_DATE>
+        <SERT_NUM>RU.77.99.11.003.Е.007818.07.14</SERT_NUM>
+        <VENDORBARCODE>467000138225</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14922084</CODE>
+        <NAME>ДЖОНСОНС БЭБИ МАСЛО ДЕТСКОЕ 200МЛ</NAME>
+        <VENDOR>Johnson and Johnson S.p.A.</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>117,690000</SPRICE>
+        <VPRICE>117,690000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>21,180000</SNDSSUM>
+        <SERIA>3005P</SERIA>
+        <VALID_DATE>01.10.2018</VALID_DATE>
+        <GTD>10113080/101115/0024488/3</GTD>
+        <SERT_NUM>RU.77.01.34.001.Е.007238.09.12</SERT_NUM>
+        <VENDORBARCODE>800211031186</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>14922488</CODE>
+        <NAME>ДЖОНСОНС БЭБИ МАСЛО ДЕТСКОЕ С РОМАШКОЙ 200МЛ</NAME>
+        <VENDOR>Johnson and Johnson S.p.A.</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>122,140000</SPRICE>
+        <VPRICE>122,140000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>21,990000</SNDSSUM>
+        <SERIA>3565P</SERIA>
+        <VALID_DATE>01.12.2018</VALID_DATE>
+        <GTD>10113080/210116/0000748/1</GTD>
+        <SERT_NUM>RU.77.01.34.001.Е.007238.09.12</SERT_NUM>
+        <VENDORBARCODE>357466007704</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>67318514</CODE>
+        <NAME>ЛЕСНОЙ БАЛЬЗАМ ЗУБНАЯ ПАСТА КОРА ДУБА/ПИХТА ОТВ75М</NAME>
+        <VENDOR>Юнилевер Русь,ООО</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>32,110000</SPRICE>
+        <VPRICE>32,110000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>11,560000</SNDSSUM>
+        <SERIA>010316</SERIA>
+        <VALID_DATE>01.03.2019</VALID_DATE>
+        <SERT_NUM>RU Д-RU.АИ16.В01035</SERT_NUM>
+        <VENDORBARCODE>460070206872</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>67520129</CODE>
+        <NAME>ЛЕСНОЙ БАЛЬЗАМ ЗУБНАЯ ПАСТА ШАЛФЕЙ/АЛОЭ ОТВАР75МЛ</NAME>
+        <VENDOR>Юнилевер Русь,ООО</VENDOR>
+        <QTTY>2</QTTY>
+        <SPRICE>32,010000</SPRICE>
+        <VPRICE>32,010000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>11,520000</SNDSSUM>
+        <SERIA>250216</SERIA>
+        <VALID_DATE>24.02.2019</VALID_DATE>
+        <SERT_NUM>RU Д-RU.АИ16.В01035</SERT_NUM>
+        <VENDORBARCODE>460070206874</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>73861324</CODE>
+        <NAME>МАСЛО КОСМЕТИЧ КОКОС 75МЛ /БАНКА/</NAME>
+        <VENDOR>МЕДИКОМЕД НПФ,ООО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>94,050000</SPRICE>
+        <VPRICE>94,050000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>16,930000</SNDSSUM>
+        <SERIA>1/122015</SERIA>
+        <VALID_DATE>01.12.2017</VALID_DATE>
+        <SERT_NUM>RU Д-RU.ПК12.В.01803</SERT_NUM>
+        <VENDORBARCODE>460510800425</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>78028030</CODE>
+        <NAME>ФИТОЧАЙ ГРИН-СЛИМ ТИ АНАНАС 2,0 N30 ПАК</NAME>
+        <VENDOR>Фитэра, ООО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>38,720000</SPRICE>
+        <VPRICE>38,720000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>6,970000</SNDSSUM>
+        <SERIA>16/0116</SERIA>
+        <VALID_DATE>01.01.2018</VALID_DATE>
+        <SERT_NUM>RU.77.99.11.003.E.005382.04.15</SERT_NUM>
+        <VENDORBARCODE>461261350019</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>78736910</CODE>
+        <NAME>ФИТОЧАЙ ГРИН-СЛИМ ТИ МЯТА/МЕЛЛИСА 2,0 N30 ПАК</NAME>
+        <VENDOR>Фитэра, ООО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>36,270000</SPRICE>
+        <VPRICE>36,270000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>6,530000</SNDSSUM>
+        <SERIA>16/0116</SERIA>
+        <VALID_DATE>16.01.2018</VALID_DATE>
+        <SERT_NUM>RU.77.99.11.003.E.005377.04.15</SERT_NUM>
+        <VENDORBARCODE>461261350018</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+      <ITEM>
+        <CODE>75558338</CODE>
+        <NAME>ЭНДОКРИНОЛ N60 КАПС</NAME>
+        <VENDOR>Эвалар ЗАО</VENDOR>
+        <QTTY>1</QTTY>
+        <SPRICE>269,830000</SPRICE>
+        <VPRICE>269,830000</VPRICE>
+        <NDS>18</NDS>
+        <SNDSSUM>48,570000</SNDSSUM>
+        <SERIA>500004</SERIA>
+        <VALID_DATE>02.03.2019</VALID_DATE>
+        <SERT_NUM>KZ.16.01.79.003.Е.000521.03.14</SERT_NUM>
+        <VENDORBARCODE>460224200817</VENDORBARCODE>
+        <ISGV>0</ISGV>
+      </ITEM>
+    </ITEMS>
+  </SUPPLY>
+</PACKET>
