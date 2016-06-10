@@ -30,12 +30,7 @@
 			<tr>
 				<td>
 					<a href="@Url.Action("Info", new { id = item.Id })">
-						@if (item.FtpIntegration) {
-							<strong>@item.Name</strong>
-						}
-						else {
-							@item.Name
-						}
+						@item.Name
 					</a>
 				</td>
 				<td>

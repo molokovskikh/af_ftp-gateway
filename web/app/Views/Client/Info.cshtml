@@ -31,7 +31,7 @@
 	</div>
 }
 		<div class="panel panel-default">
-			@if (Model.FtpIntegration)
+			@if (userList.Count>0)
 			{
 		<!-- Default panel contents -->
 				<div class="panel-heading">
@@ -99,6 +99,21 @@
 						ISGV - Признак ЖНВЛС<br>
 					</div>
 				</div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Подключенные пользователи:</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in userList)
+						{
+							<tr>
+								<td>@item.Name</td>
+							</tr>
+						}
+					</tbody>
+				</table>
 			}
 			else
 			{
@@ -106,21 +121,6 @@
 					<div class="panel">
 						<a href="@Url.Action("SwitchOnIntegration",new {Model.Id})" class="btn btn-success">Включить интеграцию</a>
 					</div>
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th>Подключенные пользователи:</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var item in userList)
-							{
-								<tr>
-									<td>@item.Name</td>
-								</tr>
-							}
-						</tbody>
-					</table>
 				</div>
 			}
 		</div>

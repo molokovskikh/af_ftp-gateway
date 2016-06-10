@@ -47,7 +47,8 @@ namespace test.DataFactory
 			if (client == null) {
 				client = new Client {
 					Name = "name_" + new Random().Next(100, 999),
-					FullName = "fullName_" + new Random().Next(100, 999)
+					FullName = "fullName_" + new Random().Next(100, 999),
+					FtpIntegration = true
 				};
 			}
 			if (!dontSave)
