@@ -25,16 +25,16 @@ namespace web_app.Controllers
 		{
 			//определяем кол-во записей в результате поиска
 			var count = search == string.Empty
-				? DbSession.Query<Client>().Count()
-				: DbSession.Query<Client>().Count(s => SqlMethods.Like(s.Name, $"%{search.Trim()}%"));
+				? DbSession.Query<Client>().Count(s => s.FtpIntegration)
+				: DbSession.Query<Client>().Count(s => s.FtpIntegration && SqlMethods.Like(s.Name, $"%{search.Trim()}%"));
 			//получаем листалку для рассчета объемов выборки
 			var items = new Paginator<Client>(count, currentPage);
 			//получаем список пользователей по результату выборки
 			if (search == string.Empty) {
-				items.SetList(DbSession.Query<Client>().OrderBy(x => x.Name).Skip(items.ItemCurrent).Take(items.ItemsPerPage).ToList());
+				items.SetList(DbSession.Query<Client>().Where(s => s.FtpIntegration).OrderBy(x => x.Name).Skip(items.ItemCurrent).Take(items.ItemsPerPage).ToList());
 			}
 			else {
-				items.SetList(DbSession.Query<Client>().Where(s => SqlMethods.Like(s.Name, $"%{search.Trim()}%") || SqlMethods.Like(s.FullName, $"%{search.Trim()}%"))
+				items.SetList(DbSession.Query<Client>().Where(s => s.FtpIntegration && (SqlMethods.Like(s.Name, $"%{search.Trim()}%") || SqlMethods.Like(s.FullName, $"%{search.Trim()}%")))
 					.OrderBy(x => x.Name).Skip(items.ItemCurrent).Take(items.ItemsPerPage).ToList());
 			}
 			ViewBag.SearchPhrase = search;
@@ -55,7 +55,7 @@ namespace web_app.Controllers
 		/// <summary>
 		/// Включение FTP интеграции, создание сторонним приложением нового пользователя (ftp, т.есть User), получение его логина и пароля
 		/// </summary>
-		public ActionResult SwitchOnIntegration(int id)
+		public ActionResult SwitchOnIntegration(uint id)
 		{
 			var item = DbSession.Query<Client>().FirstOrDefault(x => x.Id == id);
 			if (item == null) {
@@ -65,8 +65,12 @@ namespace web_app.Controllers
 			var htmlResult = new string[0];
 #if DEBUG
 			htmlResult = new[] { "newLogin", "newPass" };
+			var user = DbSession.Query<web_app.Models.User>().OrderByDescending(s => s.Id).FirstOrDefault();
+			user.ClientId = id;
+			user.UseFtpGateway = true;
+      DbSession.Save(user);
 #else
-			
+
 	//запрос на добавление пользователя к другому приложению 
 			string ulrNewUser = ConfigurationManager.AppSettings["UpdateClientFtpState"];
 			//отправка запроса на добавление пользователя
@@ -80,8 +84,6 @@ namespace web_app.Controllers
 #endif
 			//если логин и пароль есть, отображаем их в сообщении
 			if (!string.IsNullOrEmpty(htmlResult[0]) && !string.IsNullOrEmpty(htmlResult[1])) {
-				item.FtpIntegration = true;
-				DbSession.Save(item);
 				MessageShow($"Ваш <strong>логин</strong>: {htmlResult[0]}, <strong>пароль</strong>: {htmlResult[1]}", MessageType.success, "Client/Info");
 			}
 			return RedirectToAction("Info", new { id });
