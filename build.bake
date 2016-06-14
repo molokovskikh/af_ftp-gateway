@@ -1,17 +1,27 @@
-﻿Global(
+﻿import Bake.Engine
+
+Global(
 	HumanReadableName: "Служба Интеграции с ИнфоАптека",
-	Server: "offdcnew.adc.analit.net",
-	DeployTo: """\\offdcnew.adc.analit.net\apps\ftp-gateway\bin\""",
 	Profile: "catalog"
 )
 
 
 task @default, [@build]
 
-task @build:
-	Build(Globals, "app")
+task "build:backend":
+	Build(Globals, "backend/app")
 
-task "deploy:app", [@build]:
-	DeployService(Globals, "app", Globals.Server, Globals.DeployTo)
+task "build:web":
+	Build(Globals, "web/app")
+
+task @build, ["build:backend", "build:web"]
+
+task "deploy:backend":
+	DeployService(Globals, "backend/app", "offdcnew.adc.analit.net", """\\offdcnew.adc.analit.net\apps\ftp-gateway\bin\""")
+
+task "deploy:web", ["build:web"]:
+	XCopyDeploy(DuckDictionary(Globals, false) {"DeployAlias": "FtpGateway"}, "web/app")
+
+task "deploy:app", ["deploy:backend", "deploy:web"]
 
 task @deploy, ["deploy:pipeline"]
