@@ -8,11 +8,17 @@ Global(
 
 task @default, [@build]
 
+task "clean:backend":
+	Clean(Globals, "backend/app")
+
 task "build:backend":
 	Build(Globals, "backend/app")
 
-task "build:web":
-	Build(Globals, "web/app")
+task "clean:web":
+	Clean(Globals, "web/app")
+
+task "build:web", ["clean:web"]:
+	BuildWeb(Globals, "web/app")
 
 task @build, ["build:backend", "build:web"]
 
