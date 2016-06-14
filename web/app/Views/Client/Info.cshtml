@@ -33,86 +33,73 @@
 		<div class="panel panel-default">
 			@if (userList.Count > 0)
 			{
-				<table class="table table-bordered">
-					<thead>
-					<tr>
-						<th>Подключенные пользователи:</th>
-					</tr>
-					</thead>
-					<tbody>
-					@foreach (var item in userList) {
-						<tr>
-							<td>@item.Name</td>
-						</tr>
-					}
-					</tbody>
-				</table>
-
-				<div class="panel-heading">
-					<h4>Инструкция эксплуатации FTP-сервиса</h4>
-				</div>
-				<div class="panel-body">
-					<div class="bs-callout bs-callout-info">
-						<h4>Сервис</h4>
-						Корневая директория сервиса ftp://ftp.analit.net/ANALIT/@Model.Id, все операции производятся в поддиректориях.<br>
-						<b>Директории обмена файлами</b><br>
-						ftp://ftp.analit.net/ANALIT/@Model.Id/prices - прайс-листы.<br>
-						ftp://ftp.analit.net/ANALIT/@Model.Id/orders - заявки.<br>
-						ftp://ftp.analit.net/ANALIT/@Model.Id/waybills - накладные.<br>
+				foreach (var item in userList) {
+					<div class="panel-heading">
+						<h4>Инструкция эксплуатации FTP-сервиса пользователя @item.Login</h4>
 					</div>
-					<div class="bs-callout bs-callout-info">
-						<h4>Прайс-листы</h4>
-						Прайс-листы формируются по запросу, маркером запроса служит файл request.txt.<br>
-						Если файл ftp://ftp.analit.net/ANALIT/@Model.Id/prices/request.txt существует в директорию ftp://ftp.analit.net/ANALIT/@Model.Id/prices/ будут выгружены прайс листы поставщиков.<br>
-						Названия файлов формируются как "Код прайс-листа"_"Код региона".xml. Пример <a href="@Url.Content("~/Content/demo-price.xml")">прайс-листа</a>.<br>
-						После завершения выгрузки файл запроса будет удален.<br>
-						<b>Поля</b><br>
-						CODE - Код поставщика<br>
-						ACODE - Код товара по справочнику АналитФармация<br>
-						ACODECR - Код производителя по справочнику АналитФармация<br>
-						NAME - Наименование<br>
-						VENDOR - Производитель<br>
-						VENDORBARCODE - штрих код<br>
-						QTTY - остаток<br>
-						VALID_DATE - срок годности<br>
-						ISBAD - признак уценки, 1 или 0<br>
-						COMMENT - примечание<br>
-						XCODE - Код предложения, передавать при формировании заявок<br>
-						MINQTTY - минимальное количество заказа<br>
-						MINSUM - минимальная сумма заказа<br>
-						PACKQTTY - кратность<br>
+					<div class="panel-body">
+						<div class="bs-callout bs-callout-info">
+							<h4>Сервис</h4>
+							Корневая директория сервиса ftp://ftp.analit.net/ANALIT/@item.Id, все операции производятся в поддиректориях.<br>
+							<b>Директории обмена файлами</b><br>
+							ftp://ftp.analit.net/ANALIT/@item.Id/prices - прайс-листы.<br>
+							ftp://ftp.analit.net/ANALIT/@item.Id/orders - заявки.<br>
+							ftp://ftp.analit.net/ANALIT/@item.Id/waybills - накладные.<br>
+						</div>
+						<div class="bs-callout bs-callout-info">
+							<h4>Прайс-листы</h4>
+							Прайс-листы формируются по запросу, маркером запроса служит файл request.txt.<br>
+							Если файл ftp://ftp.analit.net/ANALIT/@item.Id/prices/request.txt существует в директорию ftp://ftp.analit.net/ANALIT/@item.Id/prices/ будут выгружены прайс листы поставщиков.<br>
+							Названия файлов формируются как "Код прайс-листа"_"Код региона".xml. Пример <a href="@Url.Content("~/Content/demo-price.xml")">прайс-листа</a>.<br>
+							После завершения выгрузки файл запроса будет удален.<br>
+							<b>Поля</b><br>
+							CODE - Код поставщика<br>
+							ACODE - Код товара по справочнику АналитФармация<br>
+							ACODECR - Код производителя по справочнику АналитФармация<br>
+							NAME - Наименование<br>
+							VENDOR - Производитель<br>
+							VENDORBARCODE - штрих код<br>
+							QTTY - остаток<br>
+							VALID_DATE - срок годности<br>
+							ISBAD - признак уценки, 1 или 0<br>
+							COMMENT - примечание<br>
+							XCODE - Код предложения, передавать при формировании заявок<br>
+							MINQTTY - минимальное количество заказа<br>
+							MINSUM - минимальная сумма заказа<br>
+							PACKQTTY - кратность<br>
+						</div>
+						<div class="bs-callout bs-callout-info">
+							<h4>Заявки</h4>
+							Заявки загружаются из директории ftp://ftp.analit.net/ANALIT/@item.Id/orders по маске "*.ord".<br>
+							Пример <a href="@Url.Content("~/Content/demo-order.xml")">заявки</a>.<br>
+							<b>Поля</b><br>
+							QTTY - количество<br>
+							XCODE - код предложения<br>
+							PRICE - цена<br>
+						</div>
+						<div class="bs-callout bs-callout-info">
+							<h4>Накладные</h4>
+							Накладные выгружаются в директорию ftp://ftp.analit.net/ANALIT/@item.Id/waybills.<br>
+							Пример <a href="@Url.Content("~/Content/demo-waybill.xml")">накладной</a>.<br>
+							<b>Поля</b><br>
+							CODE - Код поставщика<br>
+							NAME - Наименование<br>
+							VENDOR - Производитель<br>
+							QTTY - Количество<br>
+							SPRICE - Цена поставщика без НДС<br>
+							VPRICE - Цена производителя без НДС<br>
+							NDS - Ставка НДС<br>
+							SNDSSUM - НДС в рулях<br>
+							SERIA - Серия<br>
+							VALID_DATE - Срок годности<br>
+							GTD - Номер таможенной декларации<br>
+							SERT_NUM - Сертификат<br>
+							VENDORBARCODE - Штрих код<br>
+							REG_PRICE - Цена гос.реестра<br>
+							ISGV - Признак ЖНВЛС<br>
+						</div>
 					</div>
-					<div class="bs-callout bs-callout-info">
-						<h4>Заявки</h4>
-						Заявки загружаются из директории ftp://ftp.analit.net/ANALIT/@Model.Id/orders по маске "*.ord".<br>
-						Пример <a href="@Url.Content("~/Content/demo-order.xml")">заявки</a>.<br>
-						<b>Поля</b><br>
-						QTTY - количество<br>
-						XCODE - код предложения<br>
-						PRICE - цена<br>
-					</div>
-					<div class="bs-callout bs-callout-info">
-						<h4>Накладные</h4>
-						Накладные выгружаются в директорию ftp://ftp.analit.net/ANALIT/@Model.Id/waybills.<br>
-						Пример <a href="@Url.Content("~/Content/demo-waybill.xml")">накладной</a>.<br>
-						<b>Поля</b><br>
-						CODE - Код поставщика<br>
-						NAME - Наименование<br>
-						VENDOR - Производитель<br>
-						QTTY - Количество<br>
-						SPRICE - Цена поставщика без НДС<br>
-						VPRICE - Цена производителя без НДС<br>
-						NDS - Ставка НДС<br>
-						SNDSSUM - НДС в рулях<br>
-						SERIA - Серия<br>
-						VALID_DATE - Срок годности<br>
-						GTD - Номер таможенной декларации<br>
-						SERT_NUM - Сертификат<br>
-						VENDORBARCODE - Штрих код<br>
-						REG_PRICE - Цена гос.реестра<br>
-						ISGV - Признак ЖНВЛС<br>
-					</div>
-				</div>
+				}
 			}
 			else
 			{
