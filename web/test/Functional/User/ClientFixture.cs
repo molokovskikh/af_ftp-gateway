@@ -58,7 +58,7 @@ namespace test.Functional.User
 			AssertText("Ваш логин: newLogin, пароль: newPass");
 			AssertText("Инструкция эксплуатации FTP-сервиса");
 			var user = DbSession.Query<web_app.Models.User>().FirstOrDefault(s => s.ClientId == client.Id);
-			AssertText(user.Name);
+			AssertText(user.Login);
 			browser.FindElementByCssSelector("a[id='logoutLink']").Click();
 			AssertText("Введите учетные данные");
 		}
