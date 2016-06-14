@@ -1,4 +1,5 @@
 ﻿import Bake.Engine
+import System.IO
 
 Global(
 	HumanReadableName: "Служба Интеграции с ИнфоАптека",
@@ -18,7 +19,11 @@ task "clean:web":
 	Clean(Globals, "web/app")
 
 task "build:web", ["clean:web"]:
+	project, output, projectFile = GetBuildConfig(Globals, "web/app")
+	root = Path.GetDirectoryName(projectFile)
 	BuildWeb(Globals, "web/app")
+	print root
+	Cp("$root/Content/*.xml", "$output/Content/")
 
 task @build, ["build:backend", "build:web"]
 
