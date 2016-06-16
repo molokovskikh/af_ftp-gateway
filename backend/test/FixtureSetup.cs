@@ -13,7 +13,7 @@ namespace test
 		public void Setup()
 		{
 			Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
-			Test.Support.Setup.BuildConfiguration();
+			Test.Support.Setup.BuildConfiguration("db");
 			var server = new app.Config.Initializers.NHibernate();
 			var holder = ActiveRecordMediator.GetSessionFactoryHolder();
 			server.Configuration = holder.GetConfiguration(typeof(ActiveRecordBase));

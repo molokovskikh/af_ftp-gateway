@@ -23,6 +23,8 @@ using log4net.Config;
 using MySql.Data.MySqlClient;
 using NHibernate;
 using NHibernate.Linq;
+using System.Data;
+using app.Dbf;
 
 namespace app
 {
@@ -198,11 +200,16 @@ order by d.LogTime desc
 limit 400;")
 				.SetParameter("userId", userId)
 				.List<uint>();
+
+			var formater = new RegardWaybillsDbfFormater();
 			foreach (var id in sendedWaybills) {
 				var name = Path.Combine(root.FullName, id + ".xml");
 				var doc = session.Load<Document>(id);
-
 				Export(name, w => ExportWaybill(session, w, doc));
+
+				var dbfname = Path.Combine(root.FullName, id + ".dbf");
+				var table = formater.FillFormater(session, doc);
+				Common.Tools.Dbf.Save(table, dbfname);
 			}
 		}
 
@@ -265,6 +272,9 @@ limit 400;")
 					if (ext.Match(".xml") || ext.Match(".ord")) {
 						ImportOrder(userId, file);
 						File.Delete(file);
+					} else if (ext.Match(".dbf")) {
+						ImportDbfOrder(userId, file);
+						File.Delete(file);
 					} else if (ext.Match(".zip")) {
 						using (var zip = ZipFile.Read(file)) {
 							foreach (var zipItem in zip) {
@@ -302,6 +312,56 @@ limit 400;")
 					session.Save(order);
 				trx.Commit();
 			}
+		}
+
+		private static void ImportDbfOrder(uint userId, string file)
+		{
+			using (var session = Factory.OpenSession())
+			using (var trx = session.BeginTransaction())
+			{
+				uint id;
+				var log = new StringWriter();
+				var rejects = new List<Reject>(); // TODO обработка реджектов
+				var table = Common.Tools.Dbf.Load(file);
+				var order = ParseDbfOrder(session, userId, table, rejects, log, out id);
+				if (order != null)
+					session.Save(order);
+				trx.Commit();
+			}
+		}
+
+		private static IList<uint> GetAddressId(ISession session, string supplierDeliveryId, string supplierClientId, uint supplierId, User user)
+		{
+			//пустая строка должна интерпретироваться как null
+			supplierClientId = supplierClientId?.Trim();
+			supplierDeliveryId = supplierDeliveryId?.Trim();
+			if (String.IsNullOrEmpty(supplierClientId))
+				supplierClientId = null;
+			if (String.IsNullOrEmpty(supplierDeliveryId))
+				supplierDeliveryId = null;
+			var addressIds = session.CreateSQLQuery(@"
+select ai.AddressId
+from Customers.Intersection i
+	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
+	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
+		join Customers.Suppliers s on s.Id = pd.FirmCode
+where i.SupplierClientId <=> :supplierClientId
+	and ai.SupplierDeliveryId <=> :supplierDeliveryId
+	and i.ClientId = :clientId
+	and s.Id = :supplierId
+group by ai.AddressId")
+				.SetParameter("supplierClientId", supplierClientId)
+				.SetParameter("supplierDeliveryId", supplierDeliveryId)
+				.SetParameter("supplierId", supplierId)
+				.SetParameter("clientId", user.Client.Id)
+				.List<uint>();
+			if (addressIds.Count == 0)
+			{
+				throw new UserFriendlyException(
+					$"Не удалось найти адрес доставки supplierClientId = {supplierClientId} supplierDeliveryId = {supplierDeliveryId} игнорирую заказ",
+					"Неизвестный отправитель");
+			}
+			return addressIds;
 		}
 
 		private static IList<uint> GetAddressId(ISession session, string depId, string predId)
@@ -442,13 +502,125 @@ group by ai.AddressId")
 			return order;
 		}
 
+
+		public static Order ParseDbfOrder(ISession session, uint userId, DataTable table, List<Reject> rejects, TextWriter logForClient, out uint id)
+		{
+			var user = session.Load<User>(userId);
+			id = 0;
+			Order order = null;
+			if (table.Rows.Count == 0)
+				return null;
+
+			var supplierClientId = table.Rows[0]["PODRCD"].ToString();
+			//var to = (string)packet.Attribute("TO");
+			//var from = (string)packet.Attribute("FROM");
+			var supplierDeliveryId = "";
+			var clientOrderId = SafeConvert.ToUInt32(table.Rows[0]["NUMZ"].ToString());
+			id = clientOrderId;
+
+			var reject = new Reject
+			{
+				//To = to,
+				//From = @from,
+				PredId = supplierClientId,
+				DepId = supplierDeliveryId,
+				OrderId = clientOrderId
+			};
+			foreach (DataRow row in table.Rows)
+			{
+				var qunatity = SafeConvert.ToUInt32(row["QNT"].ToString());
+				var cost = Convert.ToDecimal(row["PRICE"].ToString());
+				var offerId = SafeConvert.ToUInt64(row["XCODE"].ToString());
+				var code = row["CODEPST"].ToString();
+				var name = row["NAME"].ToString();
+
+				reject.Items.Add(new RejectItem(clientOrderId, code, qunatity, name, cost, offerId));
+			}
+			rejects.Add(reject);
+
+			var addressIds = GetAddressId(session, supplierDeliveryId, supplierClientId, SupplierIdForCodeLookup, user);
+
+			var address = session.Load<Address>(addressIds[0]);
+			var rules = session.Load<OrderRules>(user.Client.Id);
+			rules.Strict = false;
+			rules.CheckAddressAccessibility = false;
+			List<ActivePrice> activePrices;
+			using (StorageProcedures.GetActivePrices((MySqlConnection)session.Connection, userId))
+			{
+				activePrices = session.Query<ActivePrice>().ToList();
+			}
+
+			var existOrder = session.Query<Order>().FirstOrDefault(o => o.UserId == userId && o.ClientOrderId == clientOrderId && !o.Deleted);
+			if (existOrder != null)
+				throw new UserFriendlyException(
+					$"Дублирующий заказ {clientOrderId}, существующий заказ {existOrder.RowId}",
+					"Дублирующая заявка");
+
+			var ordered = new List<RejectItem>();
+			foreach (var item in reject.Items)
+			{
+				try
+				{
+					var offer = OfferQuery.GetById(session, user, item.OfferId);
+
+					if (offer == null)
+					{
+						var archiveOffer = session.Get<ArchiveOffer>(item.OfferId);
+						if (archiveOffer == null)
+							throw new UserFriendlyException($"Не удалось найти предложение {item.OfferId} игнорирую строку",
+								"Заявка сделана по неактуальному прайс-листу");
+
+						offer = archiveOffer.ToOffer(activePrices, item.Price);
+						if (offer == null)
+							throw new UserFriendlyException(
+								$"Прайс {archiveOffer.PriceList.PriceCode} больше не доступен клиенту игнорирую строку",
+								"Прайс-лист отключен");
+					}
+
+					if (order == null)
+					{
+						order = new Order(offer.PriceList, user, address, rules);
+						order.ClientOrderId = clientOrderId;
+					}
+
+					order.AddOrderItem(offer, item.Quantity);
+					ordered.Add(item);
+				}
+				catch (OrderException e)
+				{
+					var message = TryGetUserFriendlyMessage(e);
+					log.Warn($"Не удалось заказать позицию {item.Name} в количестве {item.Quantity}", e);
+					logForClient.WriteLine("Не удалось заказать позицию {0} по заявке {3} в количестве {1}: {2}", item.Name, item.Quantity, message, clientOrderId);
+				}
+			}
+
+			foreach (var rejectItem in ordered)
+			{
+				reject.Items.Remove(rejectItem);
+			}
+
+			if (reject.Items.Count == 0)
+				rejects.Remove(reject);
+
+			if (order != null && order.OrderItems.Count == 0)
+				return null;
+
+			return order;
+		}
+
+
 		private static void ExportPrices(ISession session, uint userId, DirectoryInfo root)
 		{
 			var offers = QueryOffers(session, userId);
+			var formater = new RegardPricesDbfFormater();
 			foreach (var group in offers.GroupBy(o => o.PriceList)) {
 				var activePrice = @group.Key;
 				var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.xml");
 				Export(name, w => ExportPrice(w, activePrice, group));
+
+				var dbfname = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
+				var table = formater.FillFormater(activePrice, group);
+				Common.Tools.Dbf.Save(table, dbfname);
 			}
 		}
 
@@ -534,5 +706,6 @@ group by ai.AddressId")
 
 			writer.WriteEndElement();
 		}
+
 	}
 }

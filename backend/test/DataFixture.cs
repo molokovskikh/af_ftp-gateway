@@ -12,6 +12,9 @@ using NUnit.Framework;
 using Test.Support;
 using Test.Support.log4net;
 using Test.Support.Suppliers;
+using Test.Support.Documents;
+using System.Data;
+using app.Dbf;
 
 namespace test
 {
@@ -41,6 +44,7 @@ namespace test
 			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
 			Program.ProcessUser(config, client.Users[0].Id);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.xml"));
+			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
 			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}
 
@@ -50,11 +54,18 @@ namespace test
 			var supplier = TestSupplier.CreateNaked(session);
 			var client = TestClient.CreateNaked(session);
 			var log = new TestDocumentLog(supplier, client);
-			var doc = new TestWaybill(log);
-			doc.AddLine(session.Query<TestProduct>().First(x => !x.Hidden));
 			session.Save(log);
+			var doc = new TestWaybill(log);
+			var product = session.Query<TestProduct>().First(x => !x.Hidden);
+			doc.AddLine(product);
+			doc.ProviderDocumentId = "G1";
+			session.Save(doc);
+			var sendLog = new TestDocumentSendLog(client.Users[0], log);
+			session.Save(sendLog);
+			FlushAndCommit();
 			Program.ProcessUser(config, client.Users[0].Id);
-			Assert.IsFalse(File.Exists($"tmp/waybills/{log.Id}.xml"));
+			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
+			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.dbf"));
 		}
 
 		[Test]
@@ -82,6 +93,64 @@ namespace test
 			Program.ProcessUser(config, client.Users[0].Id);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
+		}
+
+		[Test]
+		public void Import_dbf_order()
+		{
+			var supplier = TestSupplier.CreateNaked(session);
+			supplier.CreateSampleCore(session);
+			Program.SupplierIdForCodeLookup = supplier.Id;
+			var price = supplier.Prices[0];
+			var client = TestClient.CreateNaked(session);
+			var address = client.Addresses[0];
+			var intersection = session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
+			intersection.SupplierDeliveryId = null;
+			intersection.Intersection.SupplierClientId = "1";
+			session.Save(intersection);
+			FlushAndCommit();
+
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
+			var table = FillOrder(price.Core.Select(x => (object)x.Id).Take(2).ToArray());
+			Common.Tools.Dbf.Save(table, Path.Combine(root.FullName, "order.dbf"));
+
+			QueryCatcher.Warn();
+			Program.ProcessUser(config, client.Users[0].Id);
+			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
+			Assert.AreEqual(1, orders.Count);
+		}
+
+		protected DataTable FillOrder(object[] ids)
+		{
+			var table = new DbfTable();
+			table.Columns(
+				Column.Numeric("NUMZ", 8),
+				Column.Date("DATEZ"),
+				Column.Char("CODEPST", 12),
+				Column.Numeric("PAYID", 2),
+				Column.Date("DATE"),
+				Column.Char("PODR", 40),
+				Column.Numeric("QNT", 8),
+				Column.Numeric("PRICE", 9, 2),
+				Column.Char("PODRCD", 12),
+				Column.Char("NAME", 80),
+				Column.Numeric("XCODE", 20)); // расширение протокола
+
+			table.Row(
+				Value.For("NUMZ", 2001),
+				Value.For("DATEZ", DateTime.Now),
+				Value.For("CODEPST", "135"),
+				Value.For("PAYID", 1), // по колонке PRICE1 прайслиста
+				Value.For("DATE", DateTime.Now),
+				Value.For("PODR", "аптека"),
+				Value.For("QNT", 1),
+				Value.For("PRICE", 39.94),
+				Value.For("PODRCD", "1"),
+				Value.For("NAME", "АНАЛЬГИН АМП. 50% 2МЛ N10 РОССИЯ"),
+				Value.For("XCODE", ids[0])
+			);
+
+			return table.ToDataTable();
 		}
 
 		protected string OrderPacket(object[] ids)
