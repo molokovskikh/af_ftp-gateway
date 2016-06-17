@@ -11,9 +11,6 @@ namespace app.Dbf
 	{
 		public DataTable FillFormater(ISession session, Document document)
 		{
-			//Order order = null;
-			//if (document.OrderId != null)
-			//	order = session.Get<Order>(document.OrderId.Value);
 
 			var lines = document.Lines;
 			if (!lines.Any())

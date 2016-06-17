@@ -15,6 +15,7 @@ using Test.Support.Suppliers;
 using Test.Support.Documents;
 using System.Data;
 using app.Dbf;
+using System.Threading;
 
 namespace test
 {
@@ -32,7 +33,7 @@ namespace test
 		}
 
 		[Test]
-		public void Export_prices()
+		public void Export_prices_xml()
 		{
 			var supplier = TestSupplier.CreateNaked(session);
 			supplier.CreateSampleCore(session);
@@ -42,8 +43,25 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
 			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
+			config.FtpFileType = 0;
 			Program.ProcessUser(config, client.Users[0].Id);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.xml"));
+			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
+		}
+
+		[Test]
+		public void Export_prices_dbf()
+		{
+			var supplier = TestSupplier.CreateNaked(session);
+			supplier.CreateSampleCore(session);
+			var price = supplier.Prices[0];
+			var client = TestClient.CreateNaked(session);
+			FlushAndCommit();
+
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
+			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
+			config.FtpFileType = 1;
+			Program.ProcessUser(config, client.Users[0].Id);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
 			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}

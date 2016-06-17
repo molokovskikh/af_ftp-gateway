@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace app.Dbf
 {
+	public delegate object Transform(object value);
+
 	public class Value
 	{
 		public Action<RowBuilder> Build;

@@ -23,5 +23,6 @@ namespace web_app.Models
 
 		public virtual bool UseFtpGateway { get; set; }
 
+		public virtual int FtpFileType { get; set; }
 	}
 }

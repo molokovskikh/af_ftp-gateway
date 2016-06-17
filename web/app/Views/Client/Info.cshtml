@@ -105,7 +105,20 @@
 			{
 				<div class="panel-body">
 					<div class="panel">
-						<a href="@Url.Action("SwitchOnIntegration",new {Model.Id})" class="btn btn-success">Включить интеграцию</a>
+					    @using (Html.BeginForm("SwitchOnIntegration", "Client", FormMethod.Post))
+              {
+                  @Html.Hidden("clientId", Model.Id)
+									<div class="form-group">
+									    <label>Формат экспорта</label>
+									    <select name="ftpFileType" class="form-control">
+									        <option value="0">xml</option>
+                          <option value="1">dbf</option>
+									    </select>
+                  </div>
+					        <div class="form-group">
+					            <input type="submit" value="Включить интеграцию" class="btn btn-success"/>
+					        </div>
+							}
 					</div>
 				</div>
 			}

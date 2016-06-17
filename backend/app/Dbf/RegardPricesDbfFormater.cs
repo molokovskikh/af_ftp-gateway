@@ -10,16 +10,6 @@ namespace app.Dbf
 		public DataTable FillFormater(ActivePrice activePrice, IEnumerable<NamedOffer> offers)
 		{
 
-			//var supplier = activePrice.Id.Price.Supplier;
-			//writer.WriteAttributeString("FROM", supplier.Name);
-			//writer.WriteAttributeString("DATE", activePrice.PriceDate.ToString("dd.MM.yyyy HH:mm"));
-			//writer.WriteAttributeString("NAME", $"{supplier.Name} {activePrice.Id.Price.PriceName}");
-
-			//writer.Element("CODE", String.Concat(offer.Code, offer.CodeCr));
-			//writer.Element("ACODE", offer.ProductId);
-			//writer.Element("ACODECR", offer.CodeFirmCr);
-			//writer.Element("XCODE", offer.Id.CoreId);
-
 			var table = new DbfTable();
 				table.Columns(
 					Column.Char("CODEPST", 12),
@@ -52,9 +42,9 @@ namespace app.Dbf
 						Value.For("QNT", offer.Quantity),
 						//Value.For("NSP", offer.),
 						Value.For("GNVLS", offer.VitallyImportant),
-						Value.For("PRICE1", offer.Cost) // Базовая
-						//Value.For("NEWFLG", offer.PriceDate)
-						//Value.For("PROTECID", offer.PriceDate)
+						Value.For("PRICE1", offer.Cost)
+						//Value.For("NEWFLG", offer.)
+						//Value.For("PROTECID", offer.)
 						//Value.For("QNTPST", offer.)
 					);
 				}

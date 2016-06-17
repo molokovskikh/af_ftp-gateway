@@ -135,16 +135,18 @@ namespace app
 			while (!token.IsCancellationRequested) {
 				try {
 					var logger = new MemorableLogger(log);
-					IList<uint> userIds;
+					IList<object[]> userIds;
 					using (var session = Factory.OpenSession()) {
-						userIds = session.CreateSQLQuery("select Id from Customers.Users where UseFtpGateway = 1")
-							.List<uint>();
+						userIds = session.CreateSQLQuery("select Id, FtpFileType from Customers.Users where UseFtpGateway = 1")
+							.List<object[]>();
 					}
 					foreach (var userId in userIds) {
-						try {
+						try
+						{
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
-							ProcessUser(config, userId);
+							config.FtpFileType = (sbyte)userId[1];
+							ProcessUser(config, (uint)userId[0]);
 							logger.Forget(userId);
 						} catch(Exception e) {
 							if (e is OperationCanceledException)
@@ -170,7 +172,7 @@ namespace app
 			if (marker != null) {
 				using (var session = Factory.OpenSession())
 				using (var trx = session.BeginTransaction()) {
-					ExportPrices(session, userId, pricesDir);
+					ExportPrices(session, userId, pricesDir, config.FtpFileType);
 					trx.Commit();
 				}
 				marker.Delete();
@@ -609,18 +611,20 @@ group by ai.AddressId")
 		}
 
 
-		private static void ExportPrices(ISession session, uint userId, DirectoryInfo root)
+		private static void ExportPrices(ISession session, uint userId, DirectoryInfo root, int ftpFileType)
 		{
 			var offers = QueryOffers(session, userId);
 			var formater = new RegardPricesDbfFormater();
 			foreach (var group in offers.GroupBy(o => o.PriceList)) {
 				var activePrice = @group.Key;
-				var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.xml");
-				Export(name, w => ExportPrice(w, activePrice, group));
-
-				var dbfname = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
-				var table = formater.FillFormater(activePrice, group);
-				Common.Tools.Dbf.Save(table, dbfname);
+				if (ftpFileType == 0) {
+					var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.xml");
+					Export(name, w => ExportPrice(w, activePrice, group));
+				} else if (ftpFileType == 1) {
+					var dbfname = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
+					var table = formater.FillFormater(activePrice, group);
+					Common.Tools.Dbf.Save(table, dbfname);
+				}
 			}
 		}
 

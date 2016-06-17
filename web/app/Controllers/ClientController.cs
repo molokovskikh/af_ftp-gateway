@@ -55,9 +55,9 @@ namespace web_app.Controllers
 		/// <summary>
 		/// Включение FTP интеграции, создание сторонним приложением нового пользователя (ftp, т.есть User), получение его логина и пароля
 		/// </summary>
-		public ActionResult SwitchOnIntegration(uint id)
+		public ActionResult SwitchOnIntegration(uint clientId, int ftpFileType)
 		{
-			var item = DbSession.Query<Client>().FirstOrDefault(x => x.Id == id);
+			var item = DbSession.Query<Client>().FirstOrDefault(x => x.Id == clientId);
 			if (item == null) {
 				MessageShow("Данного клиента не существует");
 				return RedirectToAction("Index");
@@ -66,16 +66,17 @@ namespace web_app.Controllers
 #if DEBUG
 			htmlResult = new[] { "newLogin", "newPass" };
 			var user = DbSession.Query<web_app.Models.User>().OrderByDescending(s => s.Id).FirstOrDefault();
-			user.ClientId = id;
+			user.ClientId = clientId;
 			user.UseFtpGateway = true;
-      DbSession.Save(user);
+			user.FtpFileType = ftpFileType;
+			DbSession.Save(user);
 #else
 
-	//запрос на добавление пользователя к другому приложению 
+			//запрос на добавление пользователя к другому приложению
 			string ulrNewUser = ConfigurationManager.AppSettings["UpdateClientFtpState"];
 			//отправка запроса на добавление пользователя
 			//получение строки с логином и паролем в случае удачной авторизации
-			string parametres = $"id={item.Id}";
+			string parametres = $"id={item.Id}&ft={ftpFileType}";
 
 
 			var serviceConnection = new AdminServiceConnection("analit");
@@ -86,7 +87,7 @@ namespace web_app.Controllers
 			if (!string.IsNullOrEmpty(htmlResult[0]) && !string.IsNullOrEmpty(htmlResult[1])) {
 				MessageShow($"Ваш <strong>логин</strong>: {htmlResult[0]}, <strong>пароль</strong>: {htmlResult[1]}", MessageType.success, "Client/Info");
 			}
-			return RedirectToAction("Info", new { id });
+			return RedirectToAction("Info", new { id = clientId });
 		}
 	}
 }
