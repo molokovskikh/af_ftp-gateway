@@ -70,6 +70,10 @@
   <ItemGroup>
     <Compile Include="Config\Config.cs" />
     <Compile Include="Config\Initializers\NHibernate.cs" />
+    <Compile Include="Dbf\DbfTable.cs" />
+    <Compile Include="Dbf\RegardRejectDbfFormater.cs" />
+    <Compile Include="Dbf\RegardWaybillsDbfFormater.cs" />
+    <Compile Include="Dbf\RegardPricesDbfFormater.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentLine.cs" />
     <Compile Include="Models\Invoice.cs" />

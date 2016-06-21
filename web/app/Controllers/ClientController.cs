@@ -55,9 +55,9 @@ namespace web_app.Controllers
 		/// <summary>
 		/// Включение FTP интеграции, создание сторонним приложением нового пользователя (ftp, т.есть User), получение его логина и пароля
 		/// </summary>
-		public ActionResult SwitchOnIntegration(uint id)
+		public ActionResult SwitchOnIntegration(uint clientId)
 		{
-			var item = DbSession.Query<Client>().FirstOrDefault(x => x.Id == id);
+			var item = DbSession.Query<Client>().FirstOrDefault(x => x.Id == clientId);
 			if (item == null) {
 				MessageShow("Данного клиента не существует");
 				return RedirectToAction("Index");
@@ -66,12 +66,12 @@ namespace web_app.Controllers
 #if DEBUG
 			htmlResult = new[] { "newLogin", "newPass" };
 			var user = DbSession.Query<web_app.Models.User>().OrderByDescending(s => s.Id).FirstOrDefault();
-			user.ClientId = id;
+			user.ClientId = clientId;
 			user.UseFtpGateway = true;
-      DbSession.Save(user);
+			DbSession.Save(user);
 #else
 
-	//запрос на добавление пользователя к другому приложению 
+			//запрос на добавление пользователя к другому приложению
 			string ulrNewUser = ConfigurationManager.AppSettings["UpdateClientFtpState"];
 			//отправка запроса на добавление пользователя
 			//получение строки с логином и паролем в случае удачной авторизации
@@ -86,7 +86,20 @@ namespace web_app.Controllers
 			if (!string.IsNullOrEmpty(htmlResult[0]) && !string.IsNullOrEmpty(htmlResult[1])) {
 				MessageShow($"Ваш <strong>логин</strong>: {htmlResult[0]}, <strong>пароль</strong>: {htmlResult[1]}", MessageType.success, "Client/Info");
 			}
-			return RedirectToAction("Info", new { id });
+			return RedirectToAction("Info", new { id = clientId });
+		}
+
+		public ActionResult EditSettings(uint userId, int ftpFileType)
+		{
+			var user = DbSession.Query<User>().FirstOrDefault(x => x.Id == userId);
+			if (user == null)
+			{
+				MessageShow("Данного пользователя не существует");
+				return RedirectToAction("Index");
+			}
+			user.FtpFileType = ftpFileType;
+			DbSession.Save(user);
+			return RedirectToAction("Info", new { id = user.ClientId });
 		}
 	}
 }
