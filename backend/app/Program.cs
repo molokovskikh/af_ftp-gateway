@@ -145,8 +145,8 @@ namespace app
 						{
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
-							config.FtpFileType = (sbyte)userId[1];
-							ProcessUser(config, (uint)userId[0]);
+							var ftpFileType = (sbyte)userId[1];
+							ProcessUser(config, (uint)userId[0], ftpFileType);
 							logger.Forget(userId);
 						} catch(Exception e) {
 							if (e is OperationCanceledException)
@@ -164,7 +164,7 @@ namespace app
 			}
 		}
 
-		public static void ProcessUser(Config.Config config, uint userId)
+		public static void ProcessUser(Config.Config config, uint userId, int ftpFileType)
 		{
 			var userRoot = Path.Combine(config.RootDir, userId.ToString());
 			var pricesDir = Directory.CreateDirectory(Path.Combine(userRoot, "prices"));
@@ -172,7 +172,7 @@ namespace app
 			if (marker != null) {
 				using (var session = Factory.OpenSession())
 				using (var trx = session.BeginTransaction()) {
-					ExportPrices(session, userId, pricesDir, config.FtpFileType);
+					ExportPrices(session, userId, pricesDir, ftpFileType);
 					trx.Commit();
 				}
 				marker.Delete();

@@ -8,7 +8,6 @@ namespace app.Config
 		public string RootDir;
 		public TimeSpan LookupTime;
 		public uint SupplierId;
-		public int FtpFileType;
 
 		public Config()
 		{

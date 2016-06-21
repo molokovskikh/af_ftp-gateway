@@ -43,8 +43,7 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
 			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
-			config.FtpFileType = 0;
-			Program.ProcessUser(config, client.Users[0].Id);
+			Program.ProcessUser(config, client.Users[0].Id, 0);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.xml"));
 			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}
@@ -60,8 +59,7 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
 			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
-			config.FtpFileType = 1;
-			Program.ProcessUser(config, client.Users[0].Id);
+			Program.ProcessUser(config, client.Users[0].Id, 1);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
 			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}
@@ -81,7 +79,7 @@ namespace test
 			var sendLog = new TestDocumentSendLog(client.Users[0], log);
 			session.Save(sendLog);
 			FlushAndCommit();
-			Program.ProcessUser(config, client.Users[0].Id);
+			Program.ProcessUser(config, client.Users[0].Id, 0);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.dbf"));
 		}
@@ -108,7 +106,7 @@ namespace test
 			}
 
 			QueryCatcher.Warn();
-			Program.ProcessUser(config, client.Users[0].Id);
+			Program.ProcessUser(config, client.Users[0].Id, 0);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
 		}
@@ -133,7 +131,7 @@ namespace test
 			Common.Tools.Dbf.Save(table, Path.Combine(root.FullName, "order.dbf"));
 
 			QueryCatcher.Warn();
-			Program.ProcessUser(config, client.Users[0].Id);
+			Program.ProcessUser(config, client.Users[0].Id, 1);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
 		}
