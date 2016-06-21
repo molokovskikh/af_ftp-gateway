@@ -211,7 +211,7 @@ limit 400;")
 
 				var dbfname = Path.Combine(root.FullName, id + ".dbf");
 				var table = formater.FillFormater(session, doc);
-				Common.Tools.Dbf.Save(table, dbfname);
+				SaveAsDbf4(table, dbfname);
 			}
 		}
 
@@ -623,7 +623,7 @@ group by ai.AddressId")
 				} else if (ftpFileType == 1) {
 					var dbfname = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
 					var table = formater.FillFormater(activePrice, group);
-					Common.Tools.Dbf.Save(table, dbfname);
+					SaveAsDbf4(table, dbfname);
 				}
 			}
 		}
@@ -711,5 +711,10 @@ group by ai.AddressId")
 			writer.WriteEndElement();
 		}
 
+		public static void SaveAsDbf4(DataTable table, string filename)
+		{
+			using (var file = new StreamWriter(File.Create(filename), Encoding.GetEncoding(866)))
+				Dbf2.SaveAsDbf4(table, file);
+		}
 	}
 }
