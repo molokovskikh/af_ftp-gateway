@@ -16,6 +16,7 @@ using Test.Support.Documents;
 using System.Data;
 using app.Dbf;
 using System.Threading;
+using System.Text;
 
 namespace test
 {
@@ -128,7 +129,9 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
 			var table = FillOrder(price.Core.Select(x => (object)x.Id).Take(2).ToArray());
-			Common.Tools.Dbf.Save(table, Path.Combine(root.FullName, "order.dbf"));
+
+			using (var file = new StreamWriter(File.Create(Path.Combine(root.FullName, "order.dbf")), Encoding.GetEncoding(866)))
+				Dbf2.SaveAsDbf4(table, file);
 
 			QueryCatcher.Warn();
 			Program.ProcessUser(config, client.Users[0].Id, 1);

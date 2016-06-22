@@ -135,18 +135,19 @@ namespace app
 			while (!token.IsCancellationRequested) {
 				try {
 					var logger = new MemorableLogger(log);
-					IList<object[]> userIds;
+					IList<object[]> users;
 					using (var session = Factory.OpenSession()) {
-						userIds = session.CreateSQLQuery("select Id, FtpFileType from Customers.Users where UseFtpGateway = 1")
+						users = session.CreateSQLQuery("select Id, FtpFileType from Customers.Users where UseFtpGateway = 1")
 							.List<object[]>();
 					}
-					foreach (var userId in userIds) {
+					foreach (var user in users) {
+						var userId = (uint)user[0];
+						var ftpFileType = (sbyte)user[1];
 						try
 						{
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
-							var ftpFileType = (sbyte)userId[1];
-							ProcessUser(config, (uint)userId[0], ftpFileType);
+							ProcessUser(config, userId, ftpFileType);
 							logger.Forget(userId);
 						} catch(Exception e) {
 							if (e is OperationCanceledException)
