@@ -26,7 +26,8 @@ namespace app.Dbf
 					Column.Numeric("PRICE1", 9, 2),
 					Column.Numeric("NEWFLG", 1),
 					Column.Numeric("PROTECID", 8),
-					Column.Numeric("QNTPST", 8));
+					Column.Numeric("QNTPST", 8),
+					Column.Numeric("XCODE", 20));
 
 				foreach (var offer in offers)
 				{
@@ -42,10 +43,11 @@ namespace app.Dbf
 						Value.For("QNT", offer.Quantity),
 						//Value.For("NSP", offer.),
 						Value.For("GNVLS", offer.VitallyImportant),
-						Value.For("PRICE1", offer.Cost)
+						Value.For("PRICE1", offer.Cost),
 						//Value.For("NEWFLG", offer.)
 						//Value.For("PROTECID", offer.)
 						//Value.For("QNTPST", offer.)
+						Value.For("XCODE", offer.CoreId)
 					);
 				}
 				return table.ToDataTable();
