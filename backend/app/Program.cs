@@ -185,12 +185,12 @@ namespace app
 			var waybillsDir = Directory.CreateDirectory(Path.Combine(userRoot, "waybills"));
 			using (var session = Factory.OpenSession())
 			using (var trx = session.BeginTransaction()) {
-				ExportWaybills(waybillsDir, session, userId);
+				ExportWaybills(waybillsDir, session, userId, ftpFileType);
 				trx.Commit();
 			}
 		}
 
-		private static void ExportWaybills(DirectoryInfo root, ISession session, uint userId)
+		private static void ExportWaybills(DirectoryInfo root, ISession session, uint userId, int ftpFileType)
 		{
 			var sendedWaybills = session.CreateSQLQuery(@"
 select dh.Id
@@ -206,13 +206,16 @@ limit 400;")
 
 			var formater = new RegardWaybillsDbfFormater();
 			foreach (var id in sendedWaybills) {
-				var name = Path.Combine(root.FullName, id + ".xml");
 				var doc = session.Load<Document>(id);
-				Export(name, w => ExportWaybill(session, w, doc));
-
-				var dbfname = Path.Combine(root.FullName, id + ".dbf");
-				var table = formater.FillFormater(session, doc);
-				SaveAsDbf4(table, dbfname);
+				if (ftpFileType == 0) {
+					var name = Path.Combine(root.FullName, id + ".xml");
+					Export(name, w => ExportWaybill(session, w, doc));
+				}
+				else if (ftpFileType == 1) {
+					var dbfname = Path.Combine(root.FullName, id + ".dbf");
+					var table = formater.FillFormater(session, doc);
+					SaveAsDbf4(table, dbfname);
+				}
 			}
 		}
 

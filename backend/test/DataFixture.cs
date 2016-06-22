@@ -82,6 +82,7 @@ namespace test
 			FlushAndCommit();
 			Program.ProcessUser(config, client.Users[0].Id, 0);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
+			Program.ProcessUser(config, client.Users[0].Id, 1);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.dbf"));
 		}
 
