@@ -643,7 +643,7 @@ group by ai.AddressId")
 				}
 				File.Delete(file);
 				WaitHelper.WaitOrFail(TimeSpan.FromSeconds(30), () => !File.Exists(file),
-					"$Не удалось дождаться удаления файла {file}");
+					$"Не удалось дождаться удаления файла {file}");
 				File.Move(tmp, file);
 			} finally {
 				File.Delete(tmp);
