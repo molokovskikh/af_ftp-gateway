@@ -517,18 +517,11 @@ group by ai.AddressId")
 			if (table.Rows.Count == 0)
 				return null;
 
-			var supplierClientId = table.Rows[0]["PODRCD"].ToString();
-			//var to = (string)packet.Attribute("TO");
-			//var from = (string)packet.Attribute("FROM");
-			var supplierDeliveryId = "";
+			var supplierDeliveryId = table.Rows[0]["PODRCD"].ToString();
 			var clientOrderId = SafeConvert.ToUInt32(table.Rows[0]["NUMZ"].ToString());
 			id = clientOrderId;
 
-			var reject = new Reject
-			{
-				//To = to,
-				//From = @from,
-				PredId = supplierClientId,
+			var reject = new Reject {
 				DepId = supplierDeliveryId,
 				OrderId = clientOrderId
 			};
@@ -544,7 +537,7 @@ group by ai.AddressId")
 			}
 			rejects.Add(reject);
 
-			var addressIds = GetAddressId(session, supplierDeliveryId, supplierClientId, SupplierIdForCodeLookup, user);
+			var addressIds = GetAddressId(session, supplierDeliveryId, null, SupplierIdForCodeLookup, user);
 
 			var address = session.Load<Address>(addressIds[0]);
 			var rules = session.Load<OrderRules>(user.Client.Id);

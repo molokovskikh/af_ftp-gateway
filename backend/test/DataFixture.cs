@@ -107,7 +107,6 @@ namespace test
 				zip.Save(Path.Combine(root.FullName, "order.zip"));
 			}
 
-			QueryCatcher.Warn();
 			Program.ProcessUser(config, client.Users[0].Id, 0);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
@@ -123,8 +122,7 @@ namespace test
 			var client = TestClient.CreateNaked(session);
 			var address = client.Addresses[0];
 			var intersection = session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
-			intersection.SupplierDeliveryId = null;
-			intersection.Intersection.SupplierClientId = "1";
+			intersection.SupplierDeliveryId = "1";
 			session.Save(intersection);
 			FlushAndCommit();
 
@@ -134,7 +132,6 @@ namespace test
 			using (var file = new StreamWriter(File.Create(Path.Combine(root.FullName, "order.dbf")), Encoding.GetEncoding(866)))
 				Dbf2.SaveAsDbf4(table, file);
 
-			QueryCatcher.Warn();
 			Program.ProcessUser(config, client.Users[0].Id, 1);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
