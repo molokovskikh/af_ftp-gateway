@@ -24,10 +24,18 @@ using MySql.Data.MySqlClient;
 using NHibernate;
 using NHibernate.Linq;
 using System.Data;
-using app.Dbf;
+using app.Helpers;
+using Order = Common.Models.Order;
 
 namespace app
 {
+	public enum ProtocolType
+	{
+		Xml = 0,
+		Dbf = 1,
+		DbfAsna = 2
+	}
+
 	public class UserFriendlyException : OrderException
 	{
 		public UserFriendlyException(string message, string usermessage) : base(message)
@@ -48,7 +56,7 @@ namespace app
 				return;
 
 			if (value is bool) {
-				value = (bool)value ? 1 : 0;
+				value = (bool) value ? 1 : 0;
 			}
 
 			writer.WriteElementString(name, value.ToString());
@@ -94,22 +102,19 @@ namespace app
 		public static ISessionFactory Factory;
 		public static uint SupplierIdForCodeLookup;
 
-		private static ILog log = LogManager.GetLogger(typeof(Program));
+		private static ILog log = LogManager.GetLogger(typeof (Program));
 
 		public static int Main(string[] args)
 		{
 			CancellationTokenSource stop = null;
-			try
-			{
-				AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => {
-					log.Fatal("Необработанная ошибка", eventArgs.ExceptionObject as Exception);
-				};
-				TaskScheduler.UnobservedTaskException += (sender, eventArgs) => {
-					log.Fatal("Необработанная ошибка", eventArgs.Exception);
-				};
+			try {
+				AppDomain.CurrentDomain.UnhandledException +=
+					(sender, eventArgs) => { log.Fatal("Необработанная ошибка", eventArgs.ExceptionObject as Exception); };
+				TaskScheduler.UnobservedTaskException +=
+					(sender, eventArgs) => { log.Fatal("Необработанная ошибка", eventArgs.Exception); };
 
 				XmlConfigurator.Configure();
-				GlobalContext.Properties["Version"] = typeof(Program).Assembly.GetName().Version;
+				GlobalContext.Properties["Version"] = typeof (Program).Assembly.GetName().Version;
 
 				var config = new Config.Config(ConfigurationManager.AppSettings);
 				stop = new CancellationTokenSource();
@@ -120,8 +125,7 @@ namespace app
 				Factory = nHibernate.Factory;
 
 				return CommandService.Start(args, stop, new Task(() => MainLoop(config, stop.Token)));
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.Fatal("Не удалось запустить приложение", e);
 				//если протоколирование сломано
 				Console.Error.WriteLine(e);
@@ -141,15 +145,14 @@ namespace app
 							.List<object[]>();
 					}
 					foreach (var user in users) {
-						var userId = (uint)user[0];
-						var ftpFileType = (sbyte)user[1];
-						try
-						{
+						var userId = (uint) user[0];
+						var ftpFileType = (ProtocolType) user[1];
+						try {
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
 							ProcessUser(config, userId, ftpFileType);
 							logger.Forget(userId);
-						} catch(Exception e) {
+						} catch (Exception e) {
 							if (e is OperationCanceledException)
 								return;
 							logger.Error($"Ошибка при обработке пользователя {userId}", e, userId);
@@ -157,7 +160,7 @@ namespace app
 					}
 					token.WaitHandle.WaitOne(config.LookupTime);
 					token.ThrowIfCancellationRequested();
-				} catch(Exception e) {
+				} catch (Exception e) {
 					if (e is OperationCanceledException)
 						return;
 					log.Error("Ошибка при обработке", e);
@@ -165,7 +168,7 @@ namespace app
 			}
 		}
 
-		public static void ProcessUser(Config.Config config, uint userId, int ftpFileType)
+		public static void ProcessUser(Config.Config config, uint userId, ProtocolType ftpFileType)
 		{
 			var userRoot = Path.Combine(config.RootDir, userId.ToString());
 			var pricesDir = Directory.CreateDirectory(Path.Combine(userRoot, "prices"));
@@ -173,545 +176,21 @@ namespace app
 			if (marker != null) {
 				using (var session = Factory.OpenSession())
 				using (var trx = session.BeginTransaction()) {
-					ExportPrices(session, userId, pricesDir, ftpFileType);
+					PriceHelper.ExportPrices(session, userId, pricesDir, ftpFileType);
 					trx.Commit();
 				}
 				marker.Delete();
 			}
 
 			var ordersDir = Directory.CreateDirectory(Path.Combine(userRoot, "orders"));
-			ImportOrders(ordersDir, userId);
+			OrderHelper.ImportOrders(ordersDir, userId, ftpFileType);
 
 			var waybillsDir = Directory.CreateDirectory(Path.Combine(userRoot, "waybills"));
 			using (var session = Factory.OpenSession())
 			using (var trx = session.BeginTransaction()) {
-				ExportWaybills(waybillsDir, session, userId, ftpFileType);
+				WaybillsHelper.ExportWaybills(waybillsDir, session, userId, ftpFileType);
 				trx.Commit();
 			}
-		}
-
-		private static void ExportWaybills(DirectoryInfo root, ISession session, uint userId, int ftpFileType)
-		{
-			var sendedWaybills = session.CreateSQLQuery(@"
-select dh.Id
-from Logs.DocumentSendLogs ds
-	join Logs.Document_logs d on d.RowId = ds.DocumentId
-	join Documents.DocumentHeaders dh on dh.DownloadId = d.RowId
-where ds.UserId = :userId
-	and ds.Committed in (0, 2)
-order by d.LogTime desc
-limit 400;")
-				.SetParameter("userId", userId)
-				.List<uint>();
-
-			var formater = new RegardWaybillsDbfFormater();
-			foreach (var id in sendedWaybills) {
-				var doc = session.Load<Document>(id);
-				if (ftpFileType == 0) {
-					var name = Path.Combine(root.FullName, id + ".xml");
-					Export(name, w => ExportWaybill(session, w, doc));
-				}
-				else if (ftpFileType == 1) {
-					var dbfname = Path.Combine(root.FullName, id + ".dbf");
-					var table = formater.FillFormater(session, doc);
-					SaveAsDbf4(table, dbfname);
-				}
-			}
-		}
-
-		public static void ExportWaybill(ISession session, XmlWriter writer, Document document)
-		{
-			Order order = null;
-			if (document.OrderId != null)
-				order = session.Get<Order>(document.OrderId.Value);
-
-			var lines = document.Lines;
-			if (!lines.Any())
-				return;
-
-			writer.WriteStartElement("PACKET");
-			writer.WriteAttributeString("NAME", "Электронная накладная");
-			writer.WriteAttributeString("ID", document.ProviderDocumentId);
-			writer.WriteAttributeString("FROM", document.Supplier.Name);
-			writer.WriteAttributeString("TYPE", "12");
-
-			writer.WriteStartElement("SUPPLY");
-			writer.Element("INVOICE_NUM", document.ProviderDocumentId);
-			writer.Element("INVOICE_DATE", document.DocumentDate.Value.ToString("dd.MM.yyyy"));
-			writer.Element("DEP_ID", null);
-			if (order != null)
-				writer.Element("ORDER_ID", order.ClientOrderId);
-
-			writer.WriteStartElement("ITEMS");
-			foreach (var line in lines) {
-				writer.WriteStartElement("ITEM");
-				writer.Element("CODE", line.Code);
-				writer.Element("NAME", line.Product);
-				writer.Element("VENDOR", line.Producer);
-				writer.Element("QTTY", line.Quantity);
-				writer.Element("SPRICE", line.SupplierCostWithoutNDS);
-				writer.Element("VPRICE", line.ProducerCostWithoutNDS);
-				writer.Element("NDS", line.Nds);
-				writer.Element("SNDSSUM", line.NdsAmount);
-				writer.Element("SERIA", line.SerialNumber);
-				writer.Element("VALID_DATE", line.Period);
-				writer.Element("GTD", line.BillOfEntryNumber);
-				writer.Element("SERT_NUM", line.Certificates);
-				writer.Element("VENDORBARCODE", line.EAN13.Slice(12));
-				writer.Element("REG_PRICE", line.RegistryCost);
-				writer.Element("ISGV", line.VitallyImportant);
-				writer.WriteEndElement();
-			}
-			writer.WriteEndElement();
-
-			writer.WriteEndElement();
-
-			writer.WriteEndElement();
-		}
-
-		private static void ImportOrders(DirectoryInfo root, uint userId)
-		{
-			var files = Directory.GetFiles(root.FullName);
-			foreach (var file in files) {
-				try {
-					var ext = Path.GetExtension(file);
-					if (ext.Match(".xml") || ext.Match(".ord")) {
-						ImportOrder(userId, file);
-						File.Delete(file);
-					} else if (ext.Match(".dbf")) {
-						ImportDbfOrder(userId, file);
-						File.Delete(file);
-					} else if (ext.Match(".zip")) {
-						using (var zip = ZipFile.Read(file)) {
-							foreach (var zipItem in zip) {
-								if (Path.GetExtension(zipItem.FileName).Match(".xml")) {
-									var tmp = Path.GetTempFileName();
-									try {
-										using (var stream = File.OpenWrite(tmp))
-											zipItem.Extract(stream);
-										ImportOrder(userId, tmp);
-									} finally {
-										File.Delete(tmp);
-									}
-								} else {
-									log.Error($"Не знаю как обработать файл {zipItem.FileName} в архиве {file}");
-								}
-							}
-						}
-						File.Delete(file);
-					}
-				} catch(Exception e) {
-					log.Error($"Не удалось обработать файл {file}", e);
-				}
-			}
-		}
-
-		private static void ImportOrder(uint userId, string file)
-		{
-			using (var session = Factory.OpenSession())
-			using (var trx = session.BeginTransaction()) {
-				uint id;
-				var log = new StringWriter();
-				var rejects = new List<Reject>();
-				var order = ParseOrder(session, userId, XDocument.Load(file), rejects, log, out id);
-				if (order != null)
-					session.Save(order);
-				trx.Commit();
-			}
-		}
-
-		private static void ImportDbfOrder(uint userId, string file)
-		{
-			using (var session = Factory.OpenSession())
-			using (var trx = session.BeginTransaction())
-			{
-				uint id;
-				var log = new StringWriter();
-				var rejects = new List<Reject>(); // TODO обработка реджектов
-				var table = Common.Tools.Dbf.Load(file);
-				var order = ParseDbfOrder(session, userId, table, rejects, log, out id);
-				if (order != null)
-					session.Save(order);
-				trx.Commit();
-			}
-		}
-
-		private static IList<uint> GetAddressId(ISession session, string supplierDeliveryId, string supplierClientId, uint supplierId, User user)
-		{
-			//пустая строка должна интерпретироваться как null
-			supplierClientId = supplierClientId?.Trim();
-			supplierDeliveryId = supplierDeliveryId?.Trim();
-			if (String.IsNullOrEmpty(supplierClientId))
-				supplierClientId = null;
-			if (String.IsNullOrEmpty(supplierDeliveryId))
-				supplierDeliveryId = null;
-			var addressIds = session.CreateSQLQuery(@"
-select ai.AddressId
-from Customers.Intersection i
-	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
-	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
-		join Customers.Suppliers s on s.Id = pd.FirmCode
-where i.SupplierClientId <=> :supplierClientId
-	and ai.SupplierDeliveryId <=> :supplierDeliveryId
-	and i.ClientId = :clientId
-	and s.Id = :supplierId
-group by ai.AddressId")
-				.SetParameter("supplierClientId", supplierClientId)
-				.SetParameter("supplierDeliveryId", supplierDeliveryId)
-				.SetParameter("supplierId", supplierId)
-				.SetParameter("clientId", user.Client.Id)
-				.List<uint>();
-			if (addressIds.Count == 0)
-			{
-				throw new UserFriendlyException(
-					$"Не удалось найти адрес доставки supplierClientId = {supplierClientId} supplierDeliveryId = {supplierDeliveryId} игнорирую заказ",
-					"Неизвестный отправитель");
-			}
-			return addressIds;
-		}
-
-		private static IList<uint> GetAddressId(ISession session, string depId, string predId)
-		{
-			depId = depId.Slice(-2, -1);
-			var addressIds = session.CreateSQLQuery(@"
-select ai.AddressId
-from Customers.Intersection i
-	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
-	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
-		join Customers.Suppliers s on s.Id = pd.FirmCode
-where i.SupplierClientId = :supplierClientId
-	and ai.SupplierDeliveryId = :supplierDeliveryId
-	and s.Id = :supplierId
-group by ai.AddressId")
-				.SetParameter("supplierClientId", predId)
-				.SetParameter("supplierDeliveryId", depId)
-				.SetParameter("supplierId", SupplierIdForCodeLookup)
-				.List<uint>();
-			if (addressIds.Count == 0) {
-				throw new UserFriendlyException(
-					$"Не удалось найти адрес доставки supplierClientId = {predId} supplierDeliveryId = {depId} игнорирую заказ",
-					"Неизвестный отправитель");
-			}
-			return addressIds;
-		}
-
-		private static string TryGetUserFriendlyMessage(OrderException e)
-		{
-			var message = e.Message;
-			if (e is UserFriendlyException) {
-				message = ((UserFriendlyException)e).UserMessage;
-			}
-			return message;
-		}
-
-		public static Order ParseOrder(ISession session, uint userId, XDocument doc, List<Reject> rejects, TextWriter logForClient, out uint id)
-		{
-			var user = session.Load<User>(userId);
-			id = 0;
-			Order order = null;
-			var packet = doc.XPathSelectElement("/PACKET");
-			if (packet == null)
-				return null;
-
-			var type = (string)packet.Attribute("TYPE");
-			if (type == null)
-				return null;
-
-			var predId = (string)packet.Attribute("PRED_ID");
-			var to = (string)packet.Attribute("TO");
-			var from = (string)packet.Attribute("FROM");
-			var depId = (string)doc.XPathSelectElement("/PACKET/ORDER/DEP_ID");
-			var orderElement = doc.XPathSelectElement("/PACKET/ORDER");
-			var clientOrderId = SafeConvert.ToUInt32((string)orderElement.XPathSelectElement("ORDER_ID"));
-			id = clientOrderId;
-
-			var reject = new Reject {
-				To = to,
-				From = @from,
-				PredId = predId,
-				DepId = depId,
-				OrderId = clientOrderId
-			};
-			var items = orderElement.XPathSelectElements("ITEMS/ITEM");
-			foreach (var item in items) {
-				var qunatity = SafeConvert.ToUInt32((string)item.XPathSelectElement("QTTY"));
-				var cost = Convert.ToDecimal((string)item.XPathSelectElement("PRICE"));
-				var offerId = SafeConvert.ToUInt64((string)item.XPathSelectElement("XCODE"));
-				var code = (string)item.XPathSelectElement("CODE");
-				var name = (string)item.XPathSelectElement("NAME");
-
-				reject.Items.Add(new RejectItem(clientOrderId, code, qunatity, name, cost, offerId));
-			}
-			rejects.Add(reject);
-
-			var addressIds = GetAddressId(session, reject.DepId, reject.PredId);
-			var address = session.Load<Address>(addressIds[0]);
-			var rules = session.Load<OrderRules>(user.Client.Id);
-			rules.Strict = false;
-			rules.CheckAddressAccessibility = false;
-			List<ActivePrice> activePrices;
-			using(StorageProcedures.GetActivePrices((MySqlConnection)session.Connection, userId)) {
-				activePrices = session.Query<ActivePrice>().ToList();
-			}
-
-			var comment = (string)orderElement.XPathSelectElement("COMMENT");
-			var existOrder = session.Query<Order>().FirstOrDefault(o => o.UserId == userId && o.ClientOrderId == clientOrderId && !o.Deleted);
-			if (existOrder != null)
-				throw new UserFriendlyException(
-					$"Дублирующий заказ {clientOrderId}, существующий заказ {existOrder.RowId}",
-					"Дублирующая заявка");
-
-			var ordered = new List<RejectItem>();
-			foreach (var item in reject.Items) {
-				try {
-					var offer = OfferQuery.GetById(session, user, item.OfferId);
-
-					if (offer == null) {
-						var archiveOffer = session.Get<ArchiveOffer>(item.OfferId);
-						if (archiveOffer == null)
-							throw new UserFriendlyException($"Не удалось найти предложение {item.OfferId} игнорирую строку",
-								"Заявка сделана по неактуальному прайс-листу");
-
-						offer = archiveOffer.ToOffer(activePrices, item.Price);
-						if (offer == null)
-							throw new UserFriendlyException(
-								$"Прайс {archiveOffer.PriceList.PriceCode} больше не доступен клиенту игнорирую строку",
-								"Прайс-лист отключен");
-					}
-
-					if (order == null) {
-						order = new Order(offer.PriceList, user, address, rules);
-						order.ClientAddition = comment;
-						order.ClientOrderId = clientOrderId;
-					}
-
-					order.AddOrderItem(offer, item.Quantity);
-					ordered.Add(item);
-				}
-				catch(OrderException e) {
-					var message = TryGetUserFriendlyMessage(e);
-					log.Warn($"Не удалось заказать позицию {item.Name} в количестве {item.Quantity}", e);
-					logForClient.WriteLine("Не удалось заказать позицию {0} по заявке {3} в количестве {1}: {2}", item.Name, item.Quantity, message, clientOrderId);
-				}
-			}
-
-			foreach (var rejectItem in ordered) {
-				reject.Items.Remove(rejectItem);
-			}
-
-			if (reject.Items.Count == 0)
-				rejects.Remove(reject);
-
-			if (order != null && order.OrderItems.Count == 0)
-				return null;
-
-			return order;
-		}
-
-
-		public static Order ParseDbfOrder(ISession session, uint userId, DataTable table, List<Reject> rejects, TextWriter logForClient, out uint id)
-		{
-			var user = session.Load<User>(userId);
-			id = 0;
-			Order order = null;
-			if (table.Rows.Count == 0)
-				return null;
-
-			var supplierDeliveryId = table.Rows[0]["PODRCD"].ToString();
-			var clientOrderId = SafeConvert.ToUInt32(table.Rows[0]["NUMZ"].ToString());
-			id = clientOrderId;
-
-			var reject = new Reject {
-				DepId = supplierDeliveryId,
-				OrderId = clientOrderId
-			};
-			foreach (DataRow row in table.Rows)
-			{
-				var qunatity = SafeConvert.ToUInt32(row["QNT"].ToString());
-				var cost = Convert.ToDecimal(row["PRICE"].ToString());
-				var offerId = SafeConvert.ToUInt64(row["XCODE"].ToString());
-				var code = row["CODEPST"].ToString();
-				var name = row["NAME"].ToString();
-
-				reject.Items.Add(new RejectItem(clientOrderId, code, qunatity, name, cost, offerId));
-			}
-			rejects.Add(reject);
-
-			var addressIds = GetAddressId(session, supplierDeliveryId, null, SupplierIdForCodeLookup, user);
-
-			var address = session.Load<Address>(addressIds[0]);
-			var rules = session.Load<OrderRules>(user.Client.Id);
-			rules.Strict = false;
-			rules.CheckAddressAccessibility = false;
-			List<ActivePrice> activePrices;
-			using (StorageProcedures.GetActivePrices((MySqlConnection)session.Connection, userId))
-			{
-				activePrices = session.Query<ActivePrice>().ToList();
-			}
-
-			var existOrder = session.Query<Order>().FirstOrDefault(o => o.UserId == userId && o.ClientOrderId == clientOrderId && !o.Deleted);
-			if (existOrder != null)
-				throw new UserFriendlyException(
-					$"Дублирующий заказ {clientOrderId}, существующий заказ {existOrder.RowId}",
-					"Дублирующая заявка");
-
-			var ordered = new List<RejectItem>();
-			foreach (var item in reject.Items)
-			{
-				try
-				{
-					var offer = OfferQuery.GetById(session, user, item.OfferId);
-
-					if (offer == null)
-					{
-						var archiveOffer = session.Get<ArchiveOffer>(item.OfferId);
-						if (archiveOffer == null)
-							throw new UserFriendlyException($"Не удалось найти предложение {item.OfferId} игнорирую строку",
-								"Заявка сделана по неактуальному прайс-листу");
-
-						offer = archiveOffer.ToOffer(activePrices, item.Price);
-						if (offer == null)
-							throw new UserFriendlyException(
-								$"Прайс {archiveOffer.PriceList.PriceCode} больше не доступен клиенту игнорирую строку",
-								"Прайс-лист отключен");
-					}
-
-					if (order == null)
-					{
-						order = new Order(offer.PriceList, user, address, rules);
-						order.ClientOrderId = clientOrderId;
-					}
-
-					order.AddOrderItem(offer, item.Quantity);
-					ordered.Add(item);
-				}
-				catch (OrderException e)
-				{
-					var message = TryGetUserFriendlyMessage(e);
-					log.Warn($"Не удалось заказать позицию {item.Name} в количестве {item.Quantity}", e);
-					logForClient.WriteLine("Не удалось заказать позицию {0} по заявке {3} в количестве {1}: {2}", item.Name, item.Quantity, message, clientOrderId);
-				}
-			}
-
-			foreach (var rejectItem in ordered)
-			{
-				reject.Items.Remove(rejectItem);
-			}
-
-			if (reject.Items.Count == 0)
-				rejects.Remove(reject);
-
-			if (order != null && order.OrderItems.Count == 0)
-				return null;
-
-			return order;
-		}
-
-
-		private static void ExportPrices(ISession session, uint userId, DirectoryInfo root, int ftpFileType)
-		{
-			var offers = QueryOffers(session, userId);
-			var formater = new RegardPricesDbfFormater();
-			foreach (var group in offers.GroupBy(o => o.PriceList)) {
-				var activePrice = @group.Key;
-				if (ftpFileType == 0) {
-					var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.xml");
-					Export(name, w => ExportPrice(w, activePrice, group));
-				} else if (ftpFileType == 1) {
-					var dbfname = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
-					var table = formater.FillFormater(activePrice, group);
-					SaveAsDbf4(table, dbfname);
-				}
-			}
-		}
-
-		private static void Export(string file, Action<XmlWriter> action)
-		{
-			var tmp = Path.GetTempFileName();
-			try {
-				var settings = new XmlWriterSettings { Encoding = Encoding.GetEncoding(1251) };
-				using (var writer = XmlWriter.Create(tmp, settings)) {
-					writer.WriteStartDocument(true);
-					action(writer);
-				}
-				File.Delete(file);
-				WaitHelper.WaitOrFail(TimeSpan.FromSeconds(30), () => !File.Exists(file),
-					$"Не удалось дождаться удаления файла {file}");
-				File.Move(tmp, file);
-			} finally {
-				File.Delete(tmp);
-			}
-		}
-
-		private static IList<NamedOffer> QueryOffers(ISession session, uint userId)
-		{
-			var query = new OfferQuery();
-			query.SelectSynonyms();
-
-			using(StorageProcedures.GetActivePrices((MySqlConnection)session.Connection, userId)) {
-				var sql = query.ToSql()
-					.Replace(" as {Offer.Id.CoreId}", " as CoreId")
-					.Replace(" as {Offer.Id.RegionCode}", " as RegionId")
-					.Replace("{Offer.", "")
-					.Replace("}", "");
-				var offers = session.CreateSQLQuery(sql)
-					.SetResultTransformer(new AliasToPropertyTransformer(typeof(NamedOffer)))
-					.List<NamedOffer>();
-				var activePrices = session.Query<ActivePrice>().Where(p => p.Id.Price.PriceCode > 0).ToList();
-				offers.Each(offer => offer.PriceList = activePrices.First(price => price.Id.Price.PriceCode == offer.PriceCode && price.Id.RegionCode == offer.Id.RegionCode));
-				return offers;
-			}
-		}
-
-		public static void ExportPrice(XmlWriter writer, ActivePrice activePrice, IEnumerable<NamedOffer> offers)
-		{
-			var supplier = activePrice.Id.Price.Supplier;
-			writer.WriteStartElement("PACKET");
-			writer.WriteAttributeString("NAME", "Прайс-лист");
-			writer.WriteAttributeString("FROM", supplier.Name);
-			writer.WriteAttributeString("TYPE", "10");
-
-			writer.WriteStartElement("PRICELIST");
-			writer.WriteAttributeString("DATE", activePrice.PriceDate.ToString("dd.MM.yyyy HH:mm"));
-			writer.WriteAttributeString("NAME", $"{supplier.Name} {activePrice.Id.Price.PriceName}");
-
-			foreach (var offer in offers)
-				ExportOffer(writer, offer);
-
-			writer.WriteEndElement();
-			writer.WriteEndElement();
-		}
-
-		private static void ExportOffer(XmlWriter writer, NamedOffer offer)
-		{
-			writer.WriteStartElement("ITEM");
-
-			writer.Element("CODE", String.Concat(offer.Code, offer.CodeCr));
-			writer.Element("ACODE", offer.ProductId);
-			writer.Element("ACODECR", offer.CodeFirmCr);
-			writer.Element("NAME", offer.ProductSynonym);
-			writer.Element("VENDOR", offer.ProducerSynonym);
-			writer.Element("VENDORBARCODE", offer.EAN13.Slice(12));
-			writer.Element("QTTY", offer.Quantity);
-			writer.Element("VALID_DATE", offer.NormalizedPeriod);
-			writer.Element("ISBAD", offer.Junk ? 1 : 0);
-			writer.Element("COMMENT", offer.Note);
-			writer.Element("XCODE", offer.Id.CoreId);
-			writer.Element("MINQTTY", offer.MinOrderCount);
-			writer.Element("MINSUM", offer.OrderCost);
-			writer.Element("PACKQTTY", offer.RequestRatio);
-
-			writer.WriteStartElement("PRICES");
-			writer.Element("Базовая", offer.Cost);
-			writer.WriteEndElement();
-
-			writer.WriteEndElement();
-		}
-
-		public static void SaveAsDbf4(DataTable table, string filename)
-		{
-			using (var file = new StreamWriter(File.Create(filename), Encoding.GetEncoding(866)))
-				Dbf2.SaveAsDbf4(table, file);
 		}
 	}
 }

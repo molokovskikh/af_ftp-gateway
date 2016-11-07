@@ -51,7 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFixture.cs" />
+    <Compile Include="DataFixture\DataProtocolDbfAsnaFixture.cs" />
+    <Compile Include="DataFixture\DataFixture.cs" />
     <Compile Include="FixtureSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
