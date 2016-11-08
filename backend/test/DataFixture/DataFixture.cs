@@ -1,24 +1,20 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using app;
 using app.Config;
+using app.Protocols;
 using Common.Tools;
-using Common.Tools.Helpers;
 using Ionic.Zip;
 using NHibernate.Linq;
-using NHibernate.Util;
 using NUnit.Framework;
 using Test.Support;
-using Test.Support.log4net;
-using Test.Support.Suppliers;
 using Test.Support.Documents;
-using System.Data;
-using app.Dbf;
-using System.Threading;
-using System.Text;
+using Test.Support.Suppliers;
 
-namespace test
+namespace test.DataFixture
 {
 	[TestFixture]
 	public class DataFixture : IntegrationFixture2
@@ -60,7 +56,7 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
 			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
-			Program.ProcessUser(config, client.Users[0].Id, 1);
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
 			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
 			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
 		}
@@ -82,7 +78,7 @@ namespace test
 			FlushAndCommit();
 			Program.ProcessUser(config, client.Users[0].Id, 0);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
-			Program.ProcessUser(config, client.Users[0].Id, 1);
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.dbf"));
 		}
 
@@ -95,7 +91,8 @@ namespace test
 			var price = supplier.Prices[0];
 			var client = TestClient.CreateNaked(session);
 			var address = client.Addresses[0];
-			var intersection = session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
+			var intersection =
+				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
 			intersection.SupplierDeliveryId = "02";
 			intersection.Intersection.SupplierClientId = "1";
 			session.Save(intersection);
@@ -103,7 +100,7 @@ namespace test
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
 			using (var zip = new ZipFile()) {
-				zip.AddEntry("1.xml", OrderPacket(price.Core.Select(x => (object)x.Id).Take(2).ToArray()));
+				zip.AddEntry("1.xml", OrderPacket(price.Core.Select(x => (object) x.Id).Take(2).ToArray()));
 				zip.Save(Path.Combine(root.FullName, "order.zip"));
 			}
 
@@ -121,18 +118,19 @@ namespace test
 			var price = supplier.Prices[0];
 			var client = TestClient.CreateNaked(session);
 			var address = client.Addresses[0];
-			var intersection = session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
+			var intersection =
+				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
 			intersection.SupplierDeliveryId = "1";
 			session.Save(intersection);
 			FlushAndCommit();
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
-			var table = FillOrder(price.Core.Select(x => (object)x.Id).Take(2).ToArray());
+			var table = FillOrder(price.Core.Select(x => (object) x.Id).Take(2).ToArray());
 
 			using (var file = new StreamWriter(File.Create(Path.Combine(root.FullName, "order.dbf")), Encoding.GetEncoding(866)))
 				Dbf2.SaveAsDbf4(table, file);
 
-			Program.ProcessUser(config, client.Users[0].Id, 1);
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
 		}
@@ -165,7 +163,7 @@ namespace test
 				Value.For("PODRCD", "1"),
 				Value.For("NAME", "АНАЛЬГИН АМП. 50% 2МЛ N10 РОССИЯ"),
 				Value.For("XCODE", ids[0])
-			);
+				);
 
 			return table.ToDataTable();
 		}

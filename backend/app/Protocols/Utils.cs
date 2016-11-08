@@ -1,10 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Common.Models;
+using Common.Tools;
 
-namespace app.Dbf
+namespace app.Protocols
 {
+	public static class Utils
+	{
+		public static string TryGetUserFriendlyMessage(OrderException e)
+		{
+			var message = e.Message;
+			if (e is UserFriendlyException) {
+				message = ((UserFriendlyException) e).UserMessage;
+			}
+			return message;
+		}
+	}
+
 	public delegate object Transform(object value);
 
 	public class Value
@@ -103,8 +119,7 @@ namespace app.Dbf
 		public DbfTable Columns(params Column[] columns)
 		{
 			var builder = BuidColumns();
-			foreach (var column in columns)
-			{
+			foreach (var column in columns) {
 				column.BuildColumn(builder);
 			}
 			builder.End();
@@ -114,8 +129,7 @@ namespace app.Dbf
 		public DbfTable Row(params Value[] values)
 		{
 			var builder = NewRow();
-			foreach (var value in values)
-			{
+			foreach (var value in values) {
 				value.Build(builder);
 			}
 			builder.End();
@@ -166,12 +180,13 @@ namespace app.Dbf
 
 		public ColumnBuilder AddCharacterColumn(string columnName, int maxLength, params Transform[] transforms)
 		{
-			return AddColumn(columnName, typeof(string), maxLength, transforms);
+			return AddColumn(columnName, typeof (string), maxLength, transforms);
 		}
 
-		public ColumnBuilder AddNubmericColumn(string columnName, int presisionDigitCount, int scaleDigitCount, params Transform[] transforms)
+		public ColumnBuilder AddNubmericColumn(string columnName, int presisionDigitCount, int scaleDigitCount,
+			params Transform[] transforms)
 		{
-			var column = new DataColumn(columnName, typeof(decimal));
+			var column = new DataColumn(columnName, typeof (decimal));
 			column.ExtendedProperties.Add("presision", presisionDigitCount);
 			column.ExtendedProperties.Add("scale", scaleDigitCount);
 			_table.Columns.Add(column);
@@ -189,18 +204,18 @@ namespace app.Dbf
 
 		public ColumnBuilder AddBooleanColumn(string columnName, params Transform[] transforms)
 		{
-			return AddColumn(columnName, typeof(bool), 0, transforms);
+			return AddColumn(columnName, typeof (bool), 0, transforms);
 		}
 
 		public ColumnBuilder AddDateColumn(string columnName, params Transform[] transforms)
 		{
-			return AddColumn(columnName, typeof(DateTime), 0, transforms);
+			return AddColumn(columnName, typeof (DateTime), 0, transforms);
 		}
 
 		private ColumnBuilder AddColumn(string columnName, Type columnType, int maxLength, params Transform[] transforms)
 		{
 			var column = new DataColumn(columnName, columnType);
-			if (columnType == typeof(string))
+			if (columnType == typeof (string))
 				column.MaxLength = maxLength;
 			_table.Columns.Add(column);
 
@@ -249,7 +264,7 @@ namespace app.Dbf
 		{
 			value = _dbfTable.ColumnTransforms(column.ColumnName).Aggregate(value, (v, t) => t(v));
 
-			if (column.DataType == typeof(string) && value != null && value.ToString().Length > column.MaxLength)
+			if (column.DataType == typeof (string) && value != null && value.ToString().Length > column.MaxLength)
 				value = value.ToString().Substring(0, column.MaxLength);
 
 			return value;
@@ -257,20 +272,16 @@ namespace app.Dbf
 
 		public DbfTable End()
 		{
-			foreach (DataColumn column in _dbfTable.Table.Columns)
-			{
+			foreach (DataColumn column in _dbfTable.Table.Columns) {
 				object value = DBNull.Value;
 				if (_values.ContainsKey(column.ColumnName))
 					value = ApplyTramsformations(column, _values[column.ColumnName]);
 				else if (ApplyTramsformations(column, null) != null)
 					value = ApplyTramsformations(column, null);
 				//игнорируем ошибки преобразования типов
-				try
-				{
+				try {
 					_row[column.ColumnName] = value ?? DBNull.Value;
-				}
-				catch (ArgumentException)
-				{
+				} catch (ArgumentException) {
 				}
 			}
 
