@@ -146,7 +146,7 @@ namespace app
 					}
 					foreach (var user in users) {
 						var userId = (uint) user[0];
-						var ftpFileType = (ProtocolType) user[1];
+						var ftpFileType = (ProtocolType) Convert.ToInt16(user[1]);
 						try {
 							log.Debug($"Обработка пользователя {userId}");
 							token.ThrowIfCancellationRequested();
