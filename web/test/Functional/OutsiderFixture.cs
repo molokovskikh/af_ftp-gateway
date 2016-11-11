@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using NHibernate;
 using NHibernate.Linq;
 using NUnit.Framework;
 using test.DataFactory;
@@ -12,10 +13,10 @@ namespace test.Functional
 		[Test]
 		public void LoginSuccess()
 		{
-			var item = DbSession.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
 			item.Enabled = true;
-			DbSession.Save(item);
-			DbSession.Transaction.Commit();
+			session.Save(item);
+			session.Transaction.Commit();
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
 			string password = ConfigurationManager.AppSettings["DefaultOperatorPassword"];
@@ -41,15 +42,15 @@ namespace test.Functional
 		[Test]
 		public void LoginError()
 		{
-			CreateData.CreateOutsider(DbSession, new web_app.Models.Outsider() {
+			CreateData.CreateOutsider(session, new web_app.Models.Outsider() {
 				Login = "login_" + new Random().Next(100, 999),
 				Name = "name_" + new Random().Next(100, 999),
 				Enabled = false
 			});
-			DbSession.Transaction.Commit();
-			DbSession.BeginTransaction();
+			session.Transaction.Commit();
+			session.BeginTransaction();
 			//
-			var item = DbSession.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
 			string password = ConfigurationManager.AppSettings["DefaultOperatorPassword"];

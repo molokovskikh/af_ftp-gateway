@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using NHibernate;
 using NHibernate.Linq;
 using NUnit.Framework;
 using test.DataFactory;
@@ -13,7 +14,7 @@ namespace test.Functional
 		[Test]
 		public void LoginSuccess()
 		{
-			var item = DbSession.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
 			string password = ConfigurationManager.AppSettings["DefaultOperatorPassword"];
@@ -36,7 +37,7 @@ namespace test.Functional
 		[Test]
 		public void LoginError()
 		{
-			var item = DbSession.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
 			string password = "error";
@@ -74,9 +75,9 @@ namespace test.Functional
 		[Test]
 		public void RegisterUsers()
 		{
-			var newOutsider = CreateData.CreateOutsider(DbSession, dontSave: true);
+			var newOutsider = CreateData.CreateOutsider(session, dontSave: true);
 			string password = ConfigurationManager.AppSettings["DefaultOperatorPassword"];
-			var outsider = DbSession.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var outsider = session.Query<web_app.Models.Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
 			var blockNameNew = ".container.body-content ";
 			LoginAsAdmin();
 			browser.FindElementByCssSelector("a[id='LinkUserList']").Click();
@@ -100,7 +101,7 @@ namespace test.Functional
 			browser.FindElementByCssSelector(blockNameNew + "input[type='submit']").Click();
 			WaitForVisibleCss("table");
 			AssertText(newOutsider.Name);
-			newOutsider = DbSession.Query<web_app.Models.Outsider>().FirstOrDefault(s => s.Login == newOutsider.Login);
+			newOutsider = session.Query<web_app.Models.Outsider>().FirstOrDefault(s => s.Login == newOutsider.Login);
 			browser.FindElementByCssSelector(blockNameNew + @"a[href*='/" + newOutsider.Id + "']").Click();
 			WaitForVisibleCss("[id='UserName']");
 			//UserName
@@ -112,7 +113,7 @@ namespace test.Functional
 			inputObj.Clear();
 			inputObj.SendKeys("new" + newOutsider.Login);
 			browser.FindElementByCssSelector(blockNameNew + "input[type='submit']").Click();
-			DbSession.Refresh(newOutsider);
+			session.Refresh(newOutsider);
 			WaitForVisibleCss("table");
 			AssertText(newOutsider.Name);
 		}

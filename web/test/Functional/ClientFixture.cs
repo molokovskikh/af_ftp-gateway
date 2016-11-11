@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NHibernate;
 using NHibernate.Linq;
 using NUnit.Framework;
 using web_app.Models;
@@ -22,9 +23,9 @@ namespace test.Functional
 
 		public void AddClient(bool asAdmin)
 		{
-			var client = DbSession.Query<Client>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var client = session.Query<Client>().OrderByDescending(s => s.Id).FirstOrDefault();
 			client.FtpIntegration = false;
-			DbSession.Save(client);
+			session.Save(client);
 			CommitAndContinue();
 
 			var blockNameNew = ".container.body-content ";
@@ -43,7 +44,7 @@ namespace test.Functional
 			WaitForVisibleCss("table");
 			Assert.That(browser.FindElementsByCssSelector(blockNameNew + "table a").Count, Is.EqualTo(0));
 			client.FtpIntegration = true;
-			DbSession.Save(client);
+			session.Save(client);
 			CommitAndContinue();
 			//search
 			inputObj = browser.FindElementByCssSelector(blockNameNew + "input[name='search']");
@@ -55,7 +56,7 @@ namespace test.Functional
 			browser.FindElementByCssSelector(blockNameNew + ".panel .btn.btn-success").Click();
 			AssertText("Ваш логин: newLogin, пароль: newPass");
 			AssertText("Инструкция эксплуатации FTP-сервиса");
-			var user = DbSession.Query<web_app.Models.User>().FirstOrDefault(s => s.ClientId == client.Id);
+			var user = session.Query<web_app.Models.User>().FirstOrDefault(s => s.ClientId == client.Id);
 			AssertText(user.Login);
 			browser.FindElementByCssSelector("a[id='logoutLink']").Click();
 			AssertText("Введите учетные данные");

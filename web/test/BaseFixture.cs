@@ -12,13 +12,12 @@ namespace test
 {
 	public class BaseFixture : SeleniumFixture
 	{
-		protected ISession DbSession => session;
 		protected IWebOperator CurrenOperator { get; set; }
 
 		[SetUp]
 		public void DefaultOnSetup()
 		{
-			CreateData.FillTables(DbSession);
+			CreateData.FillTables(session);
 		}
 
 		[TearDown]
@@ -33,7 +32,7 @@ namespace test
 
 		public Admin LoginAsAdmin()
 		{
-			var item = DbSession.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<Admin>().OrderByDescending(s => s.Id).FirstOrDefault();
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
 			string password = ConfigurationManager.AppSettings["DefaultOperatorPassword"];
@@ -67,11 +66,11 @@ namespace test
 
 		public Outsider LoginAsOutsider()
 		{
-			var item = DbSession.Query<Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
+			var item = session.Query<Outsider>().OrderByDescending(s => s.Id).FirstOrDefault();
 			item.Enabled = true;
-			DbSession.Save(item);
+			session.Save(item);
 
-			DbSession.Transaction.Commit();
+			session.Transaction.Commit();
 
 			var blockNameNew = "#loginForm ";
 			string login = item.Login;
