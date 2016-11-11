@@ -30,9 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CassiniDev-lib, Version=3.5.1.6, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="CassiniDev4-lib, Version=4.0.1.7, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Castle.ActiveRecord, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\CassiniDev.3.5.1.2\lib\net40\CassiniDev-lib.dll</HintPath>
+      <HintPath>..\..\packages\Castle.ActiveRecord.4.0.1\lib\net40\Castle.ActiveRecord.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,20 +76,17 @@
     <Compile Include="Functional\User\ClientFixture.cs" />
     <Compile Include="Functional\User\OutsiderFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SeleniumFixture.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Tasks\Fixture.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\packages\WebDriver.ChromeDriver.win32.2.20.0.0\content\chromedriver.exe">
-      <Link>chromedriver.exe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\common-mysql\Common.NHibernate\Common.NHibernate.csproj">
       <Project>{8be188ca-a0d9-4609-ab2e-ab8edf849fe0}</Project>
       <Name>Common.NHibernate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\test-support\Test.Support.Selenium\Test.Support.Selenium.csproj">
+      <Project>{e37375ce-adba-47c9-9fa1-d7c5c704cd89}</Project>
+      <Name>Test.Support.Selenium</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\test-support\Test.Support\Test.Support.csproj">
       <Project>{a215e837-1208-49e3-af93-a9612223122c}</Project>
@@ -103,7 +101,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

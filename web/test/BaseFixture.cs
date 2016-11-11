@@ -4,6 +4,7 @@ using NHibernate;
 using NHibernate.Linq;
 using NUnit.Framework;
 using test.DataFactory;
+using Test.Support.Selenium;
 using web_app.Interfaces;
 using web_app.Models;
 
@@ -23,8 +24,7 @@ namespace test
 			DbSession = factory.OpenSession();
 			try {
 				DbSession.BeginTransaction();
-			}
-			catch {
+			} catch {
 				DbSession.Close();
 				throw;
 			}
@@ -69,6 +69,19 @@ namespace test
 			browser.FindElementByCssSelector(blockNameNew + "input[type='submit']").Click();
 			CurrenOperator = item;
 			return item;
+		}
+
+		public void CloseAllTabsButOne()
+		{
+			var allTabsToClose = GlobalDriver.WindowHandles.ToList();
+
+			if (allTabsToClose.Count > 1)
+				for (int i = 1; i < allTabsToClose.Count; i++) {
+					if (GlobalDriver.CurrentWindowHandle != allTabsToClose[i]) {
+						GlobalDriver.SwitchTo().Window(allTabsToClose[i]);
+						GlobalDriver.Close();
+					}
+				}
 		}
 
 		public Outsider LoginAsOutsider()
