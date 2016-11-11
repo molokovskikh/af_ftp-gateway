@@ -6,7 +6,7 @@ using NUnit.Framework;
 using test.DataFactory;
 using web_app.Models;
 
-namespace test.Functional.User
+namespace test.Functional
 {
 	class AdminFixture : BaseFixture
 	{

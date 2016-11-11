@@ -12,31 +12,13 @@ namespace test
 {
 	public class BaseFixture : SeleniumFixture
 	{
-		protected ISession DbSession;
+		protected ISession DbSession => session;
 		protected IWebOperator CurrenOperator { get; set; }
 
 		[SetUp]
 		public void DefaultOnSetup()
 		{
-			var nhibernate = new web_app.NHibernate();
-			nhibernate.Init();
-			var factory = nhibernate.Factory;
-			DbSession = factory.OpenSession();
-			try {
-				DbSession.BeginTransaction();
-			} catch {
-				DbSession.Close();
-				throw;
-			}
 			CreateData.FillTables(DbSession);
-			DbSession.BeginTransaction();
-		}
-
-		public void TryUpdateTransaction()
-		{
-			if (!DbSession.Transaction.IsActive) {
-				DbSession.BeginTransaction();
-			}
 		}
 
 		[TearDown]
@@ -46,7 +28,6 @@ namespace test
 				CurrenOperator = null;
 				browser.FindElementByCssSelector("a[id='logoutLink']").Click();
 			}
-			DbSession.Close();
 			CloseAllTabsButOne();
 		}
 

@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
 using web_app.Models;
 
-namespace test.Functional.User
+namespace test.Functional
 {
 	class ClientFixture : BaseFixture
 	{
@@ -21,12 +22,11 @@ namespace test.Functional.User
 
 		public void AddClient(bool asAdmin)
 		{
-			TryUpdateTransaction();
 			var client = DbSession.Query<Client>().OrderByDescending(s => s.Id).FirstOrDefault();
 			client.FtpIntegration = false;
 			DbSession.Save(client);
-			DbSession.Transaction.Commit();
-			TryUpdateTransaction();
+			CommitAndContinue();
+
 			var blockNameNew = ".container.body-content ";
 			if (asAdmin) {
 				LoginAsAdmin();
@@ -42,11 +42,9 @@ namespace test.Functional.User
 			browser.FindElementByCssSelector(blockNameNew + "button[type='submit']").Click();
 			WaitForVisibleCss("table");
 			Assert.That(browser.FindElementsByCssSelector(blockNameNew + "table a").Count, Is.EqualTo(0));
-			TryUpdateTransaction();
 			client.FtpIntegration = true;
 			DbSession.Save(client);
-			DbSession.Transaction.Commit();
-			TryUpdateTransaction();
+			CommitAndContinue();
 			//search
 			inputObj = browser.FindElementByCssSelector(blockNameNew + "input[name='search']");
 			inputObj.Clear();

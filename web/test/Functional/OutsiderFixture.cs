@@ -5,7 +5,7 @@ using NHibernate.Linq;
 using NUnit.Framework;
 using test.DataFactory;
 
-namespace test.Functional.User
+namespace test.Functional
 {
 	class OutsiderFixture : BaseFixture
 	{
