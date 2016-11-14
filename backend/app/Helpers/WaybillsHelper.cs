@@ -38,13 +38,13 @@ limit 400;")
 				var doc = session.Load<Document>(id);
 				if (ftpFileType == ProtocolType.Xml) {
 					var name = Path.Combine(root.FullName, id + ".xml");
-					Protocols.Xml.SaveInFile(name, t => Protocols.Xml.FormatterRegardWaybillsExport(session, t, doc));
+					Protocols.Xml.SaveInFile(name, t => Protocols.Xml.Waybill(session, t, doc));
 				} else if (ftpFileType == ProtocolType.Dbf) {
 					var name = Path.Combine(root.FullName, id + ".dbf");
-					Protocols.Dbf.SaveInFile(name, Protocols.Dbf.FormatterRegardWaybillsExport(session, doc));
+					Dbf2.SaveAsDbf4(Protocols.Dbf.Waybll(session, doc), name);
 				} else if (ftpFileType == ProtocolType.DbfAsna) {
 					var name = Path.Combine(root.FullName, id + ".dbf");
-					Protocols.DbfAsna.SaveInFile(name, Protocols.DbfAsna.FormatterRegardWaybillsExport(session, doc));
+					Dbf2.SaveAsDbf4(Protocols.DbfAsna.Waybill(session, doc), name);
 				}
 			}
 		}

@@ -3,29 +3,19 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using app.Models;
 using Common.Models;
-using Common.Models.Repositories;
-using Common.MySql;
-using Common.NHibernate;
 using Common.Tools;
-using Common.Tools.Helpers;
 using Common.Tools.Threading;
-using Ionic.Zip;
 using log4net;
 using log4net.Config;
-using MySql.Data.MySqlClient;
 using NHibernate;
-using NHibernate.Linq;
-using System.Data;
 using app.Helpers;
-using Order = Common.Models.Order;
+using app.Models;
+using Quartz;
+using Quartz.Impl;
 
 namespace app
 {
@@ -136,6 +126,16 @@ namespace app
 
 		public static void MainLoop(Config.Config config, CancellationToken token)
 		{
+			var scheduler = StdSchedulerFactory.GetDefaultScheduler();
+			var job = JobBuilder.Create<FtpExportJob>().WithIdentity("FtpJob").Build();
+			var trigger = TriggerBuilder.Create()
+				.WithIdentity("FtpJobTrigger")
+				.WithCronSchedule("0 0 8,15 * * ?")
+				.Build();
+			scheduler.ScheduleJob(job, trigger);
+			scheduler.Start();
+			token.Register(() => scheduler.Shutdown());
+
 			while (!token.IsCancellationRequested) {
 				try {
 					var logger = new MemorableLogger(log);

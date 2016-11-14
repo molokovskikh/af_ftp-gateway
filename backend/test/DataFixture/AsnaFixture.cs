@@ -17,7 +17,7 @@ using Test.Support.Suppliers;
 namespace test.DataFixture
 {
 	[TestFixture]
-	public class DataProtocolDbfAsnaFixture : IntegrationFixture2
+	public class AsnaFixture : IntegrationFixture2
 	{
 		private Config config;
 
@@ -28,7 +28,6 @@ namespace test.DataFixture
 			config = new Config();
 			config.RootDir = Directory.CreateDirectory("tmp").FullName;
 		}
-
 
 		[Test]
 		public void Export_waybills()
@@ -82,17 +81,16 @@ namespace test.DataFixture
 			FlushAndCommit();
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
-			var table = FillOrder(price.Core.Select(x => (object) x.Id).Take(2).ToArray());
+			var filename = Path.Combine(root.FullName, "order.dbf");
 
-			using (var file = new StreamWriter(File.Create(Path.Combine(root.FullName, "order.dbf")), Encoding.GetEncoding(866)))
-				Dbf2.SaveAsDbf4(table, file);
+			FillOrder(filename, price.Core.Select(x => x.Id).Take(2).ToArray());
 
 			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.DbfAsna);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
 		}
 
-		protected DataTable FillOrder(object[] ids)
+		public static void FillOrder(string filename, ulong[] ids)
 		{
 			var table = new DbfTable();
 			table.Columns(
@@ -105,24 +103,22 @@ namespace test.DataFixture
 				Column.Numeric("QNT", 8),
 				Column.Numeric("PRICE", 9, 2),
 				Column.Char("PODRCD", 12),
-				Column.Char("NAME", 80),
-				Column.Numeric("XCODE", 20)); // расширение протокола
+				Column.Char("NAME", 80)); // расширение протокола
 
 			table.Row(
 				Value.For("NUMZ", 2001),
 				Value.For("DATEZ", DateTime.Now),
-				Value.For("CODEPST", "135"),
+				Value.For("CODEPST", ids[0]),
 				Value.For("PAYID", 1), // по колонке PRICE1 прайслиста
 				Value.For("DATE", DateTime.Now),
 				Value.For("PODR", "аптека"),
 				Value.For("QNT", 1),
 				Value.For("PRICE", 39.94),
 				Value.For("PODRCD", "1"),
-				Value.For("NAME", "АНАЛЬГИН АМП. 50% 2МЛ N10 РОССИЯ"),
-				Value.For("XCODE", ids[0])
+				Value.For("NAME", "АНАЛЬГИН АМП. 50% 2МЛ N10 РОССИЯ")
 				);
 
-			return table.ToDataTable();
+			Dbf2.SaveAsDbf4(table.ToDataTable(), filename);
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace app.Protocols
 	{
 		private static ILog log = LogManager.GetLogger(typeof (DbfAsna));
 
-		public static DataTable FormatterRegardPricesExport(ActivePrice activePrice, IEnumerable<NamedOffer> offers)
+		public static DataTable Price(IEnumerable<NamedOffer> offers)
 		{
 			var table = new DbfTable();
 			table.Columns(
@@ -46,33 +46,25 @@ namespace app.Protocols
 				Column.Numeric("PRICE9", 9, 2),
 				Column.Numeric("PRICE10", 9, 2),
 				Column.Numeric("NEWFLG", 1),
-				Column.Numeric("QNTPST", 8),
-				Column.Numeric("XCODE", 20));
+				Column.Numeric("QNTPST", 8));
 
 			foreach (var offer in offers) {
 				table.Row(
-					Value.For("CODEPST", offer.Code),
+					Value.For("CODEPST", offer.CoreId),
 					Value.For("NAME", offer.ProductSynonym),
-					//Value.For("CNTR", offer.RegionId), ///Это не название страны, номер! ?
 					Value.For("FIRM", offer.ProducerSynonym),
 					Value.For("QNTPACK", offer.RequestRatio),
 					Value.For("EAN13", offer.EAN13.Slice(12)),
-					//Value.For("NDS", offer.),	//отсутствует
 					Value.For("GDATE", offer.NormalizedPeriod),
 					Value.For("QNT", offer.Quantity),
-					//Value.For("NSP", offer.),	//отсутствует
 					Value.For("GNVLS", offer.VitallyImportant),
-					Value.For("PRICE1", offer.Cost),
-					//Value.For("NEWFLG", offer.)	//отсутствует
-					//Value.For("QNTPST", offer.)	//отсутствует
-					Value.For("XCODE", offer.CoreId)
-					);
+					Value.For("PRICE1", offer.Cost));
 			}
 			return table.ToDataTable();
 		}
 
 
-		public static DataTable FormatterRegardWaybillsExport(ISession session, Document document)
+		public static DataTable Waybill(ISession session, Document document)
 		{
 			var lines = document.Lines;
 			if (!lines.Any())
@@ -225,12 +217,6 @@ group by ai.AddressId")
 			}
 		}
 
-		public static void SaveInFile(string filename, DataTable table)
-		{
-			using (var file = new StreamWriter(File.Create(filename), Encoding.GetEncoding(866)))
-				Dbf2.SaveAsDbf4(table, file);
-		}
-
 		private static Order OrderParse(ISession session, uint userId, DataTable table, List<Reject> rejects,
 			TextWriter logForClient, out uint id)
 		{
@@ -251,7 +237,7 @@ group by ai.AddressId")
 			foreach (DataRow row in table.Rows) {
 				var qunatity = SafeConvert.ToUInt32(row["QNT"].ToString());
 				var cost = Convert.ToDecimal(row["PRICE"].ToString());
-				var offerId = SafeConvert.ToUInt64(row["XCODE"].ToString());
+				var offerId = SafeConvert.ToUInt64(row["CODEPST"].ToString());
 				var code = row["CODEPST"].ToString();
 				var name = row["NAME"].ToString();
 

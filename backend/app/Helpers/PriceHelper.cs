@@ -33,18 +33,18 @@ namespace app.Helpers
 				var activePrice = @group.Key;
 				if (ftpFileType == ProtocolType.Xml) {
 					var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.xml");
-					Protocols.Xml.SaveInFile(name, t => Protocols.Xml.FormatterRegardPricesExport(t, activePrice, group));
+					Protocols.Xml.SaveInFile(name, t => Protocols.Xml.Price(t, activePrice, group));
 				} else if (ftpFileType == ProtocolType.Dbf) {
 					var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
-					Protocols.Dbf.SaveInFile(name, Protocols.Dbf.FormatterRegardPricesExport(activePrice, group));
+					Dbf2.SaveAsDbf4(Protocols.Dbf.Price(activePrice, @group), name);
 				} else if (ftpFileType == ProtocolType.DbfAsna) {
 					var name = Path.Combine(root.FullName, $"{activePrice.Id.Price.PriceCode}_{activePrice.Id.RegionCode}.dbf");
-					Protocols.DbfAsna.SaveInFile(name, Protocols.DbfAsna.FormatterRegardPricesExport(activePrice, group));
+					Dbf2.SaveAsDbf4(Protocols.DbfAsna.Price(@group), name);
 				}
 			}
 		}
 
-		private static IList<NamedOffer> QueryOffers(ISession session, uint userId)
+		public static IList<NamedOffer> QueryOffers(ISession session, uint userId)
 		{
 			var query = new OfferQuery();
 			query.SelectSynonyms();

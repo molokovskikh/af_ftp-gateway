@@ -7,6 +7,7 @@ namespace app.Models
 {
 	public enum DocType
 	{
+		Docs,
 		[Description("Накладная")] Waybill = 1,
 		[Description("Отказ")] Reject = 2
 	}

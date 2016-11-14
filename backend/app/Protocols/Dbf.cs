@@ -22,7 +22,7 @@ namespace app.Protocols
 	{
 		private static ILog log = LogManager.GetLogger(typeof (Dbf));
 
-		public static DataTable FormatterRegardPricesExport(ActivePrice activePrice, IEnumerable<NamedOffer> offers)
+		public static DataTable Price(ActivePrice activePrice, IEnumerable<NamedOffer> offers)
 		{
 			var table = new DbfTable();
 			table.Columns(
@@ -66,7 +66,7 @@ namespace app.Protocols
 			return table.ToDataTable();
 		}
 
-		public static DataTable FormatterRegardWaybillsExport(ISession session, Document document)
+		public static DataTable Waybll(ISession session, Document document)
 		{
 			var lines = document.Lines;
 			if (!lines.Any())
@@ -361,12 +361,6 @@ group by ai.AddressId")
 			//	);
 			//}
 			return table.ToDataTable();
-		}
-
-		public static void SaveInFile(string filename, DataTable table)
-		{
-			using (var file = new StreamWriter(File.Create(filename), Encoding.GetEncoding(866)))
-				Dbf2.SaveAsDbf4(table, file);
 		}
 	}
 }

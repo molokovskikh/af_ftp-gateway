@@ -24,7 +24,7 @@ namespace app.Protocols
 	{
 		private static ILog log = LogManager.GetLogger(typeof (Xml));
 
-		public static void FormatterRegardPricesExport(XmlWriter writer, ActivePrice activePrice,
+		public static void Price(XmlWriter writer, ActivePrice activePrice,
 			IEnumerable<NamedOffer> offers)
 		{
 			var supplier = activePrice.Id.Price.Supplier;
@@ -71,7 +71,7 @@ namespace app.Protocols
 		}
 
 
-		public static void FormatterRegardWaybillsExport(ISession session, XmlWriter writer, Document document)
+		public static void Waybill(ISession session, XmlWriter writer, Document document)
 		{
 			Order order = null;
 			if (document.OrderId != null)
