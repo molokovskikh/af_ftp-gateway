@@ -127,12 +127,8 @@ namespace app
 		public static void MainLoop(Config.Config config, CancellationToken token)
 		{
 			var scheduler = StdSchedulerFactory.GetDefaultScheduler();
-			var job = JobBuilder.Create<FtpExportJob>().WithIdentity("FtpJob").Build();
-			var trigger = TriggerBuilder.Create()
-				.WithIdentity("FtpJobTrigger")
-				.WithCronSchedule("0 0 8,15 * * ?")
-				.Build();
-			scheduler.ScheduleJob(job, trigger);
+			CronJob(scheduler, config.FtpExportPlan, typeof(FtpExportJob));
+			CronJob(scheduler, config.FtpImportPlan, typeof(FtpImportJob));
 			scheduler.Start();
 			token.Register(() => scheduler.Shutdown());
 
@@ -166,6 +162,16 @@ namespace app
 					log.Error("Ошибка при обработке", e);
 				}
 			}
+		}
+
+		private static void CronJob(IScheduler scheduler, string plan, Type type)
+		{
+			var job = JobBuilder.Create(type).WithIdentity("FtpJob").Build();
+			var trigger = TriggerBuilder.Create()
+				.WithIdentity("FtpJobTrigger")
+				.WithCronSchedule(plan)
+				.Build();
+			scheduler.ScheduleJob(job, trigger);
 		}
 
 		public static void ProcessUser(Config.Config config, uint userId, ProtocolType ftpFileType)
