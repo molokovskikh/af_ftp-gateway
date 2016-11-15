@@ -166,9 +166,9 @@ namespace app
 
 		private static void CronJob(IScheduler scheduler, string plan, Type type)
 		{
-			var job = JobBuilder.Create(type).WithIdentity("FtpJob").Build();
+			var job = JobBuilder.Create(type).WithIdentity(type.Name).Build();
 			var trigger = TriggerBuilder.Create()
-				.WithIdentity("FtpJobTrigger")
+				.WithIdentity(type.Name + "Trigger")
 				.WithCronSchedule(plan)
 				.Build();
 			scheduler.ScheduleJob(job, trigger);
