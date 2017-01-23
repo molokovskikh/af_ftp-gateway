@@ -24,5 +24,12 @@ namespace app.Models
 		public virtual bool DocumentDelivered { get; set; }
 		public virtual bool FileDelivered { get; set; }
 		public virtual DateTime? SendDate { get; set; }
+
+		public void Commit()
+		{
+			Committed = true;
+			DocumentDelivered = true;
+			SendDate = DateTime.Now;
+		}
 	}
 }

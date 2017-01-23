@@ -23,7 +23,7 @@ namespace app.Helpers
 		public static void ExportWaybills(DirectoryInfo root, ISession session, uint userId, ProtocolType ftpFileType)
 		{
 			var sendedWaybills = session.CreateSQLQuery(@"
-select dh.Id
+select dh.Id, ds.Id
 from Logs.DocumentSendLogs ds
 	join Logs.Document_logs d on d.RowId = ds.DocumentId
 	join Documents.DocumentHeaders dh on dh.DownloadId = d.RowId
@@ -32,9 +32,10 @@ where ds.UserId = :userId
 order by d.LogTime desc
 limit 400;")
 				.SetParameter("userId", userId)
-				.List<uint>();
+				.List<object[]>();
 
-			foreach (var id in sendedWaybills) {
+			foreach (var item in sendedWaybills) {
+				var id = Convert.ToUInt32(item[0]);
 				var doc = session.Load<Document>(id);
 				if (ftpFileType == ProtocolType.Xml) {
 					var name = Path.Combine(root.FullName, id + ".xml");
@@ -46,6 +47,8 @@ limit 400;")
 					var name = Path.Combine(root.FullName, id + ".dbf");
 					Dbf2.SaveAsDbf4(Protocols.DbfAsna.Waybill(session, doc), name);
 				}
+				var sendLog = session.Load<DocumentSendLog>(Convert.ToUInt32(item[1]));
+				sendLog.Commit();
 			}
 		}
 	}

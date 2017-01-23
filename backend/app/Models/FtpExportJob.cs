@@ -17,7 +17,7 @@ namespace app.Models
 {
 	public class FtpExportJob : IJob
 	{
-		private ILog log = LogManager.GetLogger(typeof(FtpExportJob));
+		private static ILog log = LogManager.GetLogger(typeof(FtpExportJob));
 
 		public void Execute(IJobExecutionContext context)
 		{
@@ -49,15 +49,28 @@ namespace app.Models
 			foreach (var supplierConfig in config) {
 				using (var cleander = new FileCleaner())
 				using (var client = new FtpClient()) {
-					OpenFtp(new Uri(supplierConfig.PriceUrl), client);
-					var priceOffers = offers.Where(x => x.PriceList.Id.Price.Supplier.Id == supplierConfig.Supplier.Id)
-						.ToArray();
-					var tmp = cleander.TmpFile();
-					Dbf2.SaveAsDbf4(DbfAsna.Price(priceOffers), tmp);
+					var url = supplierConfig.PriceUrl;
+					try {
+						if (!String.IsNullOrEmpty(url)) {
+							OpenFtp(new Uri(url), client);
+							var priceOffers = offers.Where(x => x.PriceList.Id.Price.Supplier.Id == supplierConfig.Supplier.Id)
+								.ToArray();
+							var tmp = cleander.TmpFile();
+							Dbf2.SaveAsDbf4(DbfAsna.Price(priceOffers), tmp);
 
-					UploadFile(client, tmp, new Uri(supplierConfig.PriceUrl));
+							UploadFile(client, tmp, new Uri(url));
+						}
+					} catch(Exception e) {
+						log.Error($"Не удалось выгрузить прайс-лист поставщика {supplierConfig.Supplier.Name} ({supplierConfig.Supplier.Id}) в {url}", e);
+#if DEBUG
+						throw;
+#endif
+					}
 
-					var waybillIds = session.CreateSQLQuery(@"
+					url = supplierConfig.WaybillUrl;
+					if (!String.IsNullOrEmpty(url)) {
+						try {
+							var waybillIds = session.CreateSQLQuery(@"
 select dh.Id, d.RowId, ds.Id as SendLogId
 from Logs.DocumentSendLogs ds
 	join Logs.Document_logs d on d.RowId = ds.DocumentId
@@ -67,30 +80,37 @@ where ds.UserId = :userId
 	and d.FirmCode = :supplierId
 order by d.LogTime desc
 limit 400;")
-						.SetParameter("userId", userId)
-						.SetParameter("supplierId", supplierConfig.Supplier.Id)
-						.List<object[]>();
-					foreach (var pair in waybillIds) {
-						var doc = session.Load<Document>(Convert.ToUInt32(pair[0]));
-						Dbf2.SaveAsDbf4(DbfAsna.Waybill(session, doc), tmp);
-						var part = supplierConfig.WaybillUrl;
-						if (!part.EndsWith("/"))
-							part += "/";
-						UploadFile(client, tmp, new Uri(part + pair[1] + ".dbf"));
-						using (var trx = session.BeginTransaction()) {
-							var sendLog = session.Load<DocumentSendLog>(Convert.ToUInt32(pair[2]));
-							sendLog.Committed = true;
-							sendLog.DocumentDelivered = true;
-							sendLog.SendDate = DateTime.Now;
-							session.Flush();
-							trx.Commit();
+								.SetParameter("userId", userId)
+								.SetParameter("supplierId", supplierConfig.Supplier.Id)
+								.List<object[]>();
+							foreach (var pair in waybillIds) {
+								var doc = session.Load<Document>(Convert.ToUInt32(pair[0]));
+								var tmp = cleander.TmpFile();
+								Dbf2.SaveAsDbf4(DbfAsna.Waybill(session, doc), tmp);
+								var part = url;
+								if (!part.EndsWith("/"))
+									part += "/";
+								UploadFile(client, tmp, new Uri(part + pair[1] + ".dbf"));
+								using (var trx = session.BeginTransaction()) {
+									var sendLog = session.Load<DocumentSendLog>(Convert.ToUInt32(pair[2]));
+									sendLog.Commit();
+									session.Flush();
+									trx.Commit();
+								}
+							}
+						} catch(Exception e) {
+							log.Error($"Не удалось выгрузить накладную поставщика {supplierConfig.Supplier.Name} ({supplierConfig.Supplier.Id}) в {url}", e);
+#if DEBUG
+							throw;
+#endif
 						}
+
 					}
 				}
 			}
 		}
 
-		private void UploadFile(FtpClient client, string filename, Uri url)
+		public static void UploadFile(FtpClient client, string filename, Uri url)
 		{
 			var path = url.GetComponents(UriComponents.Path, UriFormat.Unescaped);
 			var dir = Path.GetDirectoryName(path);
