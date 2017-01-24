@@ -25,7 +25,7 @@ namespace app.Models
 		public virtual bool FileDelivered { get; set; }
 		public virtual DateTime? SendDate { get; set; }
 
-		public void Commit()
+		public virtual void Commit()
 		{
 			Committed = true;
 			DocumentDelivered = true;
