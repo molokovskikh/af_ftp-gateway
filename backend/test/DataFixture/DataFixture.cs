@@ -76,10 +76,10 @@ namespace test.DataFixture
 			var sendLog = new TestDocumentSendLog(client.Users[0], log);
 			session.Save(sendLog);
 			FlushAndCommit();
-			Program.ProcessUser(config, client.Users[0].Id, 0);
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Xml);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
-			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
-			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.dbf"));
+			session.Refresh(sendLog);
+			Assert.IsTrue(sendLog.Committed);
 		}
 
 		[Test]

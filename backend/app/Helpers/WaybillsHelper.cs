@@ -23,7 +23,7 @@ namespace app.Helpers
 		public static void ExportWaybills(DirectoryInfo root, ISession session, uint userId, ProtocolType ftpFileType)
 		{
 			var sendedWaybills = session.CreateSQLQuery(@"
-select dh.Id, ds.Id
+select dh.Id, ds.Id as SendLogId
 from Logs.DocumentSendLogs ds
 	join Logs.Document_logs d on d.RowId = ds.DocumentId
 	join Documents.DocumentHeaders dh on dh.DownloadId = d.RowId
