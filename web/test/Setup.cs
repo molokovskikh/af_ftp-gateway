@@ -35,7 +35,7 @@ namespace test
 		[OneTimeTearDown]
 		public void TeardownFixture()
 		{
-			string pathsToCleanAfter = "Customers.webftpoutsiders,billing.payerclients,Customers.Clients";
+			string pathsToCleanAfter = "Customers.ftpconfigs,Customers.webftpoutsiders,billing.payerclients,Customers.Clients";
 			SessionForQuery(pathsToCleanAfter);
 			SeleniumFixture.GlobalTearDown();
 			_webServer.ShutDown();
