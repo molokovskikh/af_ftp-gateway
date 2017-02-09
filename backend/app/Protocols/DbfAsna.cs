@@ -235,8 +235,13 @@ group by ai.AddressId")
 				OrderId = clientOrderId
 			};
 			foreach (DataRow row in table.Rows) {
-				var qunatity = SafeConvert.ToUInt32(row["QNT"].ToString());
-				var cost = Convert.ToDecimal(row["PRICE"].ToString());
+				uint qunatity;
+				try {
+					qunatity = Convert.ToUInt32(row["QNT"]);
+				} catch(Exception) {
+					qunatity = SafeConvert.ToUInt32(row["QNT"].ToString());
+				}
+				var cost = Convert.ToDecimal(row["PRICE"]);
 				var offerId = SafeConvert.ToUInt64(row["CODEPST"].ToString());
 				var code = row["CODEPST"].ToString();
 				var name = row["NAME"].ToString();

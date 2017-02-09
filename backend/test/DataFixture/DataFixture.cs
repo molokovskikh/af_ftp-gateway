@@ -135,6 +135,57 @@ namespace test.DataFixture
 			Assert.AreEqual(1, orders.Count);
 		}
 
+		[Test]
+		public void Parse_decimal_count()
+		{
+			var supplier = TestSupplier.CreateNaked(session);
+			supplier.CreateSampleCore(session);
+			Program.SupplierIdForCodeLookup = supplier.Id;
+			var price = supplier.Prices[0];
+			var client = TestClient.CreateNaked(session);
+			var address = client.Addresses[0];
+			var intersection =
+				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
+			intersection.SupplierDeliveryId = "1";
+			session.Save(intersection);
+			FlushAndCommit();
+
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
+			var table = new DbfTable();
+			table.Columns(
+				Column.Numeric("NUMZ", 8),
+				Column.Date("DATEZ"),
+				Column.Char("CODEPST", 12),
+				Column.Numeric("PAYID", 2),
+				Column.Date("DATE"),
+				Column.Char("PODR", 40),
+				Column.Numeric("QNT", 19, 5),
+				Column.Numeric("PRICE", 9, 2),
+				Column.Char("PODRCD", 12),
+				Column.Char("NAME", 80),
+				Column.Numeric("XCODE", 20)); // расширение протокола
+
+			table.Row(
+				Value.For("NUMZ", 2001),
+				Value.For("DATEZ", DateTime.Now),
+				Value.For("CODEPST", "135"),
+				Value.For("PAYID", 1), // по колонке PRICE1 прайслиста
+				Value.For("DATE", DateTime.Now),
+				Value.For("PODR", "аптека"),
+				Value.For("QNT", 1.0m),
+				Value.For("PRICE", 39.94),
+				Value.For("PODRCD", "1"),
+				Value.For("NAME", "АНАЛЬГИН АМП. 50% 2МЛ N10 РОССИЯ"),
+				Value.For("XCODE", price.Core[0].Id)
+				);
+
+			Dbf2.SaveAsDbf4(table.ToDataTable(), Path.Combine(root.FullName, "order.dbf"));
+
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
+			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
+			Assert.AreEqual(1, orders.Count);
+		}
+
 		protected DataTable FillOrder(object[] ids)
 		{
 			var table = new DbfTable();
