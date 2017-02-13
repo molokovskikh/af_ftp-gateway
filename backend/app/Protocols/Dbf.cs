@@ -191,33 +191,30 @@ namespace app.Protocols
 		{
 			using (var session = Program.Factory.OpenSession())
 			using (var trx = session.BeginTransaction()) {
-				uint id;
-				var log = new StringWriter();
-				var rejects = new List<Reject>(); // TODO обработка реджектов
 				var table = Common.Tools.Dbf.Load(file);
-				var order = OrderParse(session, userId, table, rejects, log, out id);
+				var order = OrderParse(session, userId, table);
 				if (order != null)
 					session.Save(order);
 				trx.Commit();
 			}
 		}
 
-		private static Order OrderParse(ISession session, uint userId, DataTable table, List<Reject> rejects,
-			TextWriter logForClient, out uint id)
+		private static Order OrderParse(ISession session, uint userId, DataTable table)
 		{
 			var user = session.Load<User>(userId);
-			id = 0;
 			Order order = null;
 			if (table.Rows.Count == 0)
 				return null;
 
 			var supplierDeliveryId = table.Rows[0]["PODRCD"].ToString();
-			var clientOrderId = SafeConvert.ToUInt32(table.Rows[0]["NUMZ"].ToString());
-			id = clientOrderId;
+			uint id;
+			unchecked {
+				id = (uint)table.Rows[0]["NUMZ"].GetHashCode();
+			}
 
 			var reject = new Reject {
 				DepId = supplierDeliveryId,
-				OrderId = clientOrderId
+				OrderId = id
 			};
 			foreach (DataRow row in table.Rows) {
 				uint qunatity;
@@ -231,9 +228,8 @@ namespace app.Protocols
 				var code = row["CODEPST"].ToString();
 				var name = row["NAME"].ToString();
 
-				reject.Items.Add(new RejectItem(clientOrderId, code, qunatity, name, cost, offerId));
+				reject.Items.Add(new RejectItem(id, code, qunatity, name, cost, offerId));
 			}
-			rejects.Add(reject);
 
 			var addressIds = GetAddressId(session, supplierDeliveryId, null, Program.SupplierIdForCodeLookup, user);
 
@@ -247,10 +243,10 @@ namespace app.Protocols
 			}
 
 			var existOrder =
-				session.Query<Order>().FirstOrDefault(o => o.UserId == userId && o.ClientOrderId == clientOrderId && !o.Deleted);
+				session.Query<Order>().FirstOrDefault(o => o.UserId == userId && o.ClientOrderId == id && !o.Deleted);
 			if (existOrder != null)
 				throw new UserFriendlyException(
-					$"Дублирующий заказ {clientOrderId}, существующий заказ {existOrder.RowId}",
+					$"Дублирующий заказ {id}, существующий заказ {existOrder.RowId}",
 					"Дублирующая заявка");
 
 			var ordered = new List<RejectItem>();
@@ -273,25 +269,19 @@ namespace app.Protocols
 
 					if (order == null) {
 						order = new Order(offer.PriceList, user, address, rules);
-						order.ClientOrderId = clientOrderId;
+						order.ClientOrderId = id;
 					}
 
 					order.AddOrderItem(offer, item.Quantity);
 					ordered.Add(item);
 				} catch (OrderException e) {
-					var message = Utils.TryGetUserFriendlyMessage(e);
 					log.Warn($"Не удалось заказать позицию {item.Name} в количестве {item.Quantity}", e);
-					logForClient.WriteLine("Не удалось заказать позицию {0} по заявке {3} в количестве {1}: {2}", item.Name,
-						item.Quantity, message, clientOrderId);
 				}
 			}
 
 			foreach (var rejectItem in ordered) {
 				reject.Items.Remove(rejectItem);
 			}
-
-			if (reject.Items.Count == 0)
-				rejects.Remove(reject);
 
 			if (order != null && order.OrderItems.Count == 0)
 				return null;
