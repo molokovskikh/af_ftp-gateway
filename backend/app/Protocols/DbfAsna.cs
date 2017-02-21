@@ -125,25 +125,7 @@ namespace app.Protocols
 				Column.Numeric("SUMS0", 12, 2),
 				Column.Numeric("SUMSNDS", 12, 2));
 
-			var podrcdList = session.CreateSQLQuery(@"
-select ai.SupplierDeliveryId
-from Customers.Intersection i
-	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
-	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
-		join Customers.Suppliers s on s.Id = pd.FirmCode
-where i.SupplierClientId <=> null
-	and ai.AddressId <=> :AddressId
-	and i.ClientId = :clientId
-	and s.Id = :supplierId
-group by ai.AddressId")
-				.SetParameter("AddressId", document.Address.Id)
-				.SetParameter("supplierId", document.Supplier.Id)
-				.SetParameter("clientId", document.ClientCode)
-				.List<uint?>();
-
-			var podrcd = podrcdList.FirstOrDefault();
-			podrcd = podrcd ?? 0; ///////////////////// Возможно ли значение 0 ?
-
+			var supplierDeliveryId = NullableConvert.ToUInt32(Program.GetSupplierDeliveryId(session, document)) ?? 0;
 			foreach (var line in lines) {
 				table.Row(
 					Value.For("NDOC", document.ProviderDocumentId),
@@ -174,7 +156,7 @@ group by ai.AddressId")
 					Value.For("SUMNDS20", document.Invoice?.NDSAmount18),
 					Value.For("SUM10", document.Invoice?.AmountWithoutNDS10),
 					Value.For("SUM20", document.Invoice?.AmountWithoutNDS18),
-					Value.For("PODRCD", podrcd),
+					Value.For("PODRCD", supplierDeliveryId),
 					Value.For("BILLNUM", document.ProviderDocumentId),
 					Value.For("BILLDT", document.DocumentDate),
 					Value.For("SUMS0", line.Amount),

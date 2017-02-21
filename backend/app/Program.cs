@@ -198,5 +198,25 @@ namespace app
 				trx.Commit();
 			}
 		}
+
+		public static string GetSupplierDeliveryId(ISession session, Document document)
+		{
+			return session.CreateSQLQuery(@"
+select ai.SupplierDeliveryId
+from Customers.Intersection i
+	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
+	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
+		join Customers.Suppliers s on s.Id = pd.FirmCode
+where i.SupplierClientId <=> null
+	and ai.AddressId = :addressId
+	and i.ClientId = :clientId
+	and s.Id = :supplierId
+group by ai.AddressId")
+				.SetParameter("addressId", document.Address.Id)
+				.SetParameter("supplierId", Program.SupplierIdForCodeLookup)
+				.SetParameter("clientId", document.ClientCode)
+				.List<string>()
+				.FirstOrDefault();
+		}
 	}
 }

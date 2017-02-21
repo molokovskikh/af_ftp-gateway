@@ -41,7 +41,8 @@ limit 400;")
 					var name = Path.Combine(root.FullName, id + ".xml");
 					Protocols.Xml.SaveInFile(name, t => Protocols.Xml.Waybill(session, t, doc));
 				} else if (ftpFileType == ProtocolType.Dbf) {
-					var name = Path.Combine(root.FullName, id + ".dbf");
+					var supplierDeliveryId = Program.GetSupplierDeliveryId(session, doc);
+					var name = Path.Combine(root.FullName, $"{id}_{supplierDeliveryId}.dbf");
 					Dbf2.SaveAsDbf4(Protocols.Dbf.Waybll(session, doc), name);
 				} else if (ftpFileType == ProtocolType.DbfAsna) {
 					var name = Path.Combine(root.FullName, id + ".dbf");

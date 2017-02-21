@@ -46,35 +46,12 @@ namespace test.DataFixture
 		}
 
 		[Test]
-		public void Export_prices_dbf()
-		{
-			var supplier = TestSupplier.CreateNaked(session);
-			supplier.CreateSampleCore(session);
-			var price = supplier.Prices[0];
-			var client = TestClient.CreateNaked(session);
-			FlushAndCommit();
-
-			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
-			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
-			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
-			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
-			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
-		}
-
-		[Test]
-		public void Export_waybills()
+		public void Export_waybills_xml()
 		{
 			var supplier = TestSupplier.CreateNaked(session);
 			var client = TestClient.CreateNaked(session);
-			var log = new TestDocumentLog(supplier, client);
-			session.Save(log);
-			var doc = new TestWaybill(log);
-			var product = session.Query<TestProduct>().First(x => !x.Hidden);
-			doc.AddLine(product);
-			doc.ProviderDocumentId = "G1";
-			session.Save(doc);
-			var sendLog = new TestDocumentSendLog(client.Users[0], log);
-			session.Save(sendLog);
+			TestDocumentSendLog sendLog;
+			var doc = SetupWaybill(supplier, client, out sendLog);
 			FlushAndCommit();
 			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Xml);
 			Assert.IsTrue(File.Exists($"tmp/{client.Users[0].Id}/waybills/{doc.Id}.xml"));
@@ -82,8 +59,22 @@ namespace test.DataFixture
 			Assert.IsTrue(sendLog.Committed);
 		}
 
+		private TestWaybill SetupWaybill(TestSupplier supplier, TestClient client, out TestDocumentSendLog sendLog)
+		{
+			var log = new TestDocumentLog(supplier, client);
+			session.Save(log);
+			var doc = new TestWaybill(log);
+			var product = session.Query<TestProduct>().First(x => !x.Hidden);
+			doc.AddLine(product);
+			doc.ProviderDocumentId = "G1";
+			session.Save(doc);
+			sendLog = new TestDocumentSendLog(client.Users[0], log);
+			session.Save(sendLog);
+			return doc;
+		}
+
 		[Test]
-		public void Import_order()
+		public void Import_order_xml()
 		{
 			var supplier = TestSupplier.CreateNaked(session);
 			supplier.CreateSampleCore(session);
@@ -104,25 +95,46 @@ namespace test.DataFixture
 				zip.Save(Path.Combine(root.FullName, "order.zip"));
 			}
 
-			Program.ProcessUser(config, client.Users[0].Id, 0);
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Xml);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
 		}
 
 		[Test]
-		public void Import_dbf_order()
+		public void Export_prices_dbf()
 		{
 			var supplier = TestSupplier.CreateNaked(session);
 			supplier.CreateSampleCore(session);
-			Program.SupplierIdForCodeLookup = supplier.Id;
 			var price = supplier.Prices[0];
 			var client = TestClient.CreateNaked(session);
-			var address = client.Addresses[0];
-			var intersection =
-				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
-			intersection.SupplierDeliveryId = "1";
-			session.Save(intersection);
 			FlushAndCommit();
+
+			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/prices");
+			FileHelper.Touch(Path.Combine(root.FullName, "request.txt"));
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
+			Assert.That(root.GetFiles().Implode(), Does.Contain($"{price.Id}_1.dbf"));
+			Assert.IsFalse(File.Exists(Path.Combine(root.FullName, "request.txt")));
+		}
+
+		[Test]
+		public void Export_waybill_dbf()
+		{
+			TestClient client;
+			var price = SetupSupplierDeliveryId(out client);
+			TestDocumentSendLog log;
+			var waybill = SetupWaybill(price.Supplier, client, out log);
+			FlushAndCommit();
+
+			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
+			Assert.AreEqual($"{waybill.Id}_1.dbf",
+				Directory.GetFiles($"tmp/{client.Users[0].Id}/waybills/").Implode(x => Path.GetFileName(x)));
+		}
+
+		[Test]
+		public void Import_order_dbf()
+		{
+			TestClient client;
+			var price = SetupSupplierDeliveryId(out client);
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
 			var table = FillOrder(price.Core.Select(x => (object) x.Id).Take(2).ToArray());
@@ -138,17 +150,8 @@ namespace test.DataFixture
 		[Test]
 		public void Parse_decimal_count()
 		{
-			var supplier = TestSupplier.CreateNaked(session);
-			supplier.CreateSampleCore(session);
-			Program.SupplierIdForCodeLookup = supplier.Id;
-			var price = supplier.Prices[0];
-			var client = TestClient.CreateNaked(session);
-			var address = client.Addresses[0];
-			var intersection =
-				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
-			intersection.SupplierDeliveryId = "1";
-			session.Save(intersection);
-			FlushAndCommit();
+			TestClient client;
+			var price = SetupSupplierDeliveryId(out client);
 
 			var root = Directory.CreateDirectory($"tmp/{client.Users[0].Id}/orders/");
 			var table = new DbfTable();
@@ -184,6 +187,22 @@ namespace test.DataFixture
 			Program.ProcessUser(config, client.Users[0].Id, ProtocolType.Dbf);
 			var orders = session.Query<TestOrder>().Where(x => x.Client.Id == client.Id).ToList();
 			Assert.AreEqual(1, orders.Count);
+		}
+
+		private TestPrice SetupSupplierDeliveryId(out TestClient client)
+		{
+			var supplier = TestSupplier.CreateNaked(session);
+			supplier.CreateSampleCore(session);
+			Program.SupplierIdForCodeLookup = supplier.Id;
+			var price = supplier.Prices[0];
+			client = TestClient.CreateNaked(session);
+			var address = client.Addresses[0];
+			var intersection =
+				session.Query<TestAddressIntersection>().First(a => a.Address == address && a.Intersection.Price == price);
+			intersection.SupplierDeliveryId = "1";
+			session.Save(intersection);
+			FlushAndCommit();
+			return price;
 		}
 
 		protected DataTable FillOrder(object[] ids)

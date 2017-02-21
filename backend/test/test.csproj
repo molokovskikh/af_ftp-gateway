@@ -99,8 +99,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFixture\AsnaFixture.cs" />
-    <Compile Include="DataFixture\DataFixture.cs" />
+    <Compile Include="AsnaFixture.cs" />
+    <Compile Include="DataFixture.cs" />
     <Compile Include="FixtureSetup.cs" />
     <Compile Include="FtpFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
