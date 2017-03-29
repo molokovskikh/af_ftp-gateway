@@ -300,12 +300,14 @@ namespace app.Protocols
 select ai.AddressId
 from Customers.Intersection i
 	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
+		join Customers.Addresses a on a.Id = ai.AddressId
 	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
 		join Customers.Suppliers s on s.Id = pd.FirmCode
 where i.SupplierClientId <=> :supplierClientId
 	and ai.SupplierDeliveryId <=> :supplierDeliveryId
 	and i.ClientId = :clientId
 	and s.Id = :supplierId
+	and a.Enabled = 1
 group by ai.AddressId")
 				.SetParameter("supplierClientId", supplierClientId)
 				.SetParameter("supplierDeliveryId", supplierDeliveryId)
