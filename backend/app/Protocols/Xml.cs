@@ -177,7 +177,7 @@ namespace app.Protocols
 			}
 			rejects.Add(reject);
 
-			var addressIds = GetAddressId(session, reject.DepId, reject.PredId);
+			var addressIds = Program.GetAddressId(session, reject.PredId, reject.DepId.Slice(-2, -1), Program.SupplierIdForCodeLookup, user);
 			var address = session.Load<Address>(addressIds[0]);
 			var rules = session.Load<OrderRules>(user.Client.Id);
 			rules.Strict = false;
@@ -242,31 +242,6 @@ namespace app.Protocols
 			return order;
 		}
 
-
-		private static IList<uint> GetAddressId(ISession session, string depId, string predId)
-		{
-			depId = depId.Slice(-2, -1);
-			var addressIds = session.CreateSQLQuery(@"
-select ai.AddressId
-from Customers.Intersection i
-	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
-	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
-		join Customers.Suppliers s on s.Id = pd.FirmCode
-where i.SupplierClientId = :supplierClientId
-	and ai.SupplierDeliveryId = :supplierDeliveryId
-	and s.Id = :supplierId
-group by ai.AddressId")
-				.SetParameter("supplierClientId", predId)
-				.SetParameter("supplierDeliveryId", depId)
-				.SetParameter("supplierId", Program.SupplierIdForCodeLookup)
-				.List<uint>();
-			if (addressIds.Count == 0) {
-				throw new UserFriendlyException(
-					$"Не удалось найти адрес доставки supplierClientId = {predId} supplierDeliveryId = {depId} игнорирую заказ",
-					"Неизвестный отправитель");
-			}
-			return addressIds;
-		}
 
 		public static void SaveInFile(string file, Action<XmlWriter> action)
 		{

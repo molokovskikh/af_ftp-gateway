@@ -218,5 +218,41 @@ group by ai.AddressId")
 				.List<string>()
 				.FirstOrDefault();
 		}
+
+		public static IList<uint> GetAddressId(ISession session, string supplierDeliveryId, string supplierClientId,
+			uint supplierId, User user)
+		{
+			//пустая строка должна интерпретироваться как null
+			supplierClientId = supplierClientId?.Trim();
+			supplierDeliveryId = supplierDeliveryId?.Trim();
+			if (String.IsNullOrEmpty(supplierClientId))
+				supplierClientId = null;
+			if (String.IsNullOrEmpty(supplierDeliveryId))
+				supplierDeliveryId = null;
+			var addressIds = session.CreateSQLQuery(@"
+select ai.AddressId
+from Customers.Intersection i
+	join Customers.AddressIntersection ai on ai.IntersectionId = i.Id
+		join Customers.Addresses a on a.Id = ai.AddressId
+	join Usersettings.Pricesdata pd on pd.PriceCode = i.PriceId
+		join Customers.Suppliers s on s.Id = pd.FirmCode
+where i.SupplierClientId <=> :supplierClientId
+	and ai.SupplierDeliveryId <=> :supplierDeliveryId
+	and i.ClientId = :clientId
+	and s.Id = :supplierId
+	and a.Enabled = 1
+group by ai.AddressId")
+				.SetParameter("supplierClientId", supplierClientId)
+				.SetParameter("supplierDeliveryId", supplierDeliveryId)
+				.SetParameter("supplierId", supplierId)
+				.SetParameter("clientId", user.Client.Id)
+				.List<uint>();
+			if (addressIds.Count == 0) {
+				throw new UserFriendlyException(
+					$"Не удалось найти адрес доставки supplierClientId = {supplierClientId} supplierDeliveryId = {supplierDeliveryId} игнорирую заказ",
+					"Неизвестный отправитель");
+			}
+			return addressIds;
+		}
 	}
 }
