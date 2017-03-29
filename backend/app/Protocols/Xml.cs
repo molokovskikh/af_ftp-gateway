@@ -177,7 +177,7 @@ namespace app.Protocols
 			}
 			rejects.Add(reject);
 
-			var addressIds = Program.GetAddressId(session, reject.PredId, reject.DepId.Slice(-2, -1), Program.SupplierIdForCodeLookup, user);
+			var addressIds = Program.GetAddressId(session, reject.DepId.Slice(-2, -1), reject.PredId, Program.SupplierIdForCodeLookup, user);
 			var address = session.Load<Address>(addressIds[0]);
 			var rules = session.Load<OrderRules>(user.Client.Id);
 			rules.Strict = false;
